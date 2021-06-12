@@ -1,0 +1,35 @@
+{
+    "name": "dad",
+    "atlasPath": [
+        "characters/DADDY_DEAREST",
+        "default"
+    ],
+    "flipX": false,
+    "animations": {
+        "idle": {
+            "fromPrefix": "Dad idle dance",
+            "fps": 24,
+            "loop": false
+        },
+        "singUp": {
+            "fromPrefix": "Dad Sing Note UP",
+            "fps": 24,
+            "loop": false
+        },
+        "singLeft": {
+            "fromPrefix": "Dad Sing Note LEFT",
+            "fps": 24,
+            "loop": false
+        },
+        "singRight": {
+            "fromPrefix": "Dad Sing Note RIGHT",
+            "fps": 24,
+            "loop": false
+        },
+        "singDown": {
+            "fromPrefix": "Dad Sing Note DOWN",
+            "fps": 24,
+            "loop": false
+        }
+    }
+}

@@ -1,0 +1,55 @@
+{
+    "name": "bf",
+    "atlasPath": [
+        "characters/BOYFRIEND",
+        "default"
+    ],
+    "flipX": false,
+    "animations": {
+        "idle": {
+            "fromPrefix": "BF idle dance",
+            "fps": 24,
+            "loop": true
+        },
+        "singUp": {
+            "fromPrefix": "BF NOTE UP0",
+            "fps": 24,
+            "loop": false
+        },
+        "singLeft": {
+            "fromPrefix": "BF NOTE LEFT0",
+            "fps": 24,
+            "loop": false
+        },
+        "singRight": {
+            "fromPrefix": "BF NOTE RIGHT0",
+            "fps": 24,
+            "loop": false
+        },
+        "singDown": {
+            "fromPrefix": "BF NOTE DOWN0",
+            "fps": 24,
+            "loop": false
+        },
+        "singUpMiss": {
+            "fromPrefix": "BF NOTE UP MISS",
+            "fps": 24,
+            "loop": false
+        },
+        "singLeftMiss": {
+            "fromPrefix": "BF NOTE LEFT MISS",
+            "fps": 24,
+            "loop": false
+        },
+        "singRightMiss": {
+            "fromPrefix": "BF NOTE RIGHT MISS",
+            "fps": 24,
+            "loop": false
+        },
+        "singDownMiss": {
+            "fromPrefix": "BF NOTE DOWN MISS",
+            "fps": 24,
+            "loop": false
+        }
+    }
+}
