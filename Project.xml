@@ -19,9 +19,10 @@
 	<set name="BUILD_DIR" value="export/release" unless="debug" />
 	<classpath name="source" />
 	
-	<assets path="assets" />
-	<assets path="songs" />
-	<assets path="data" />
+	<assets path="assets/default" />
+	<assets path="assets" type="template" />
+	<assets path="songs" type="template" />
+	<assets path="data" type="template" />
 
 	<!-- _______________________________ Libraries ______________________________ -->
 
