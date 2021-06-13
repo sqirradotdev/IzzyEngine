@@ -22,7 +22,7 @@ typedef Week =
 	var songs:Array<String>;
 }
 
-typedef Song =
+typedef SongMetadata =
 {
 	var songName:String;
 	var bpm:Int;
@@ -35,11 +35,8 @@ class SongDatabase
 {
 	public static var weeks:Array<Week>;
 
-	public static function updateSongList():Bool
+	public static function updateWeekList():Bool
 	{
-		trace("Updating song database...");
-
-		#if desktop
 		if (FileSystem.exists("data/weeks.json"))
 		{
 			weeks = Json.parse(File.getContent("data/weeks.json"));
@@ -50,22 +47,41 @@ class SongDatabase
 			trace("weeks.json is missing!");
 			return false;
 		}
-		#else
-		weeks = Json.parse(Assets.getText("data/weeks.json"));
-		#end
 
 		return true;
 	}
 
-	public static function getSongs():Array<Array<String>>
+	public static function getSongs():Array<Array<Dynamic>>
 	{
-		var songs:Array<Array<String>> = [];
+		var songs:Array<Array<Dynamic>> = [];
 
 		for (week in weeks)
 		{
 			for (song in week.songs)
 			{
-				songs.push([song, week.storyMenuCharacters[0]]);
+				var dir:String = "songs/" + song + "/";
+				var path:String = dir + "songMetadata.json";
+				var songMetadata:SongMetadata = {
+					songName: "",
+					bpm: 100,
+					characters: ["dad", "bf"],
+					stage: "stage"
+				};
+
+				if (FileSystem.exists(path))
+					songMetadata = Json.parse(File.getContent(path));
+				else
+				{
+					trace("Song metadata file for \"" + song + "\" is missing. Creating one");
+					songMetadata.songName = song;
+
+					if (!FileSystem.exists(dir))
+						FileSystem.createDirectory(dir);
+
+					File.saveContent(path, Json.stringify(songMetadata, "\t"));
+				}
+
+				songs.push([song, week.storyMenuCharacters[0], songMetadata.bpm]);
 			}
 		}
 

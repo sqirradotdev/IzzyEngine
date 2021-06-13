@@ -14,7 +14,7 @@ import openfl.utils.Assets;
 import sys.FileSystem;
 #end
 
-class FreeplayState extends FlxTransitionableState
+class FreeplayState extends MusicBeatState
 {
 	public static var firstTime:Bool = false;
 	static var songSelection:Int = 0;
@@ -24,7 +24,7 @@ class FreeplayState extends FlxTransitionableState
 
 	var lerpedSongSelection:Float = 0;
 
-	var songs:Array<Array<String>>;
+	var songs:Array<Array<Dynamic>>;
 
 	var bg:FlxSprite;
 	var songItems:FlxSpriteGroup;
@@ -66,6 +66,9 @@ class FreeplayState extends FlxTransitionableState
 	override public function update(elapsed:Float):Void
 	{
 		super.update(elapsed);
+
+		bg.scale.x = FlxMath.lerp(bg.scale.x, 1.0, elapsed * 6);
+		bg.scale.y = FlxMath.lerp(bg.scale.y, 1.0, elapsed * 6);
 
 		lerpedSongSelection = FlxMath.lerp(lerpedSongSelection, songSelection, elapsed * 6);
 
@@ -116,6 +119,12 @@ class FreeplayState extends FlxTransitionableState
 		}
 	}
 
+	override function onBeat():Void
+	{
+		bg.scale.x += 0.015;
+		bg.scale.y += 0.015;
+	}
+
 	function changeSong(selection:Int = 0)
 	{
 		songSelection = selection;
@@ -137,9 +146,11 @@ class FreeplayState extends FlxTransitionableState
 	function changeSongPlaying()
 	{
 		var instPath:String = "songs/" + songs[songSelection][0] + "/Inst.ogg";
-		#if desktop
+
 		if (FileSystem.exists(instPath))
 		{
+			Conductor.bpm = songs[songSelection][2];
+
 			if (!Assets.cache.hasSound(instPath))
 			{
 				var inst:Sound = Sound.fromFile("./" + instPath);
@@ -147,9 +158,6 @@ class FreeplayState extends FlxTransitionableState
 			}
 			FlxG.sound.playMusic(Assets.cache.getSound(instPath));
 		}
-		#else
-		FlxG.sound.playMusic(instPath);
-		#end
 
 		if (musicTween != null)
 			musicTween.cancel();

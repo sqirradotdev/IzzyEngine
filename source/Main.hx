@@ -60,7 +60,7 @@ class Main extends Sprite
 	function startGame()
 	{
 		var targetState:Class<FlxState>;
-		if (SongDatabase.updateSongList())
+		if (SongDatabase.updateWeekList())
 			targetState = TitleState;
 		// targetState = TestState;
 		else
