@@ -1,12 +1,18 @@
 package;
 
+import SongDatabase.Difficulty;
+import SongDatabase.SongMetadata;
 import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.system.FlxAssets;
+import flixel.system.FlxSound;
 import flixel.text.FlxText;
+import flixel.util.FlxTimer;
+import openfl.media.Sound;
+import openfl.utils.Assets;
 
 enum Mode
 {
@@ -16,7 +22,11 @@ enum Mode
 
 class PlayState extends MusicBeatState
 {
+	static var currentSong:Array<Dynamic>;
+
 	var mode:Mode = FREEPLAY;
+
+	var countingDown:Bool = false;
 
 	var stageCamera:FlxCamera;
 	var uiCamera:FlxCamera;
@@ -31,16 +41,19 @@ class PlayState extends MusicBeatState
 	var gf:FlxSprite;
 	var player:FlxSprite;
 
+	var voicesSound:FlxSound;
+
+	var countDownTimer:FlxTimer;
+
 	public function new()
 	{
 		super();
-		FreeplayState.firstTime = false;
-		persistentUpdate = true;
 	}
 
 	override public function create()
 	{
 		super.create();
+		persistentUpdate = true;
 
 		stageCamera = new FlxCamera();
 		add(stageCamera);
@@ -86,11 +99,29 @@ class PlayState extends MusicBeatState
 		player = new Character(770, 450, "bf");
 		add(player);
 		player.animation.play("idle");
+
+		Conductor.bpm = currentSong[0].bpm;
+
+		if (!Assets.cache.hasSound(currentSong[3]))
+		{
+			var voices:Sound = Sound.fromFile("./" + currentSong[3]);
+			Assets.cache.setSound(currentSong[3], voices);
+		}
+
+		startCountDown();
 	}
 
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		if (countDownTimer != null)
+		{
+			if (countingDown)
+			{
+				Conductor.time = -countDownTimer.timeLeft;
+			}
+		}
 
 		if (subState == null)
 		{
@@ -105,16 +136,51 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	override public function destroy()
+	override function onBeat():Void
 	{
-		forEach(function(object:FlxBasic)
+		switch (Conductor.beat)
 		{
-			object.destroy();
-		});
-
-		super.destroy();
+			case -4:
+				FlxG.sound.play(AssetHelper.getAsset("intro3.ogg", SOUND));
+			case -3:
+				FlxG.sound.play(AssetHelper.getAsset("intro2.ogg", SOUND));
+			case -2:
+				FlxG.sound.play(AssetHelper.getAsset("intro1.ogg", SOUND));
+			case -1:
+				FlxG.sound.play(AssetHelper.getAsset("introGo.ogg", SOUND));
+		}
 	}
 
+	function startCountDown()
+	{
+		new FlxTimer().start(0.3, function(_:FlxTimer)
+		{
+			countDownTimer = new FlxTimer();
+			countingDown = true;
+			countDownTimer.start((60.0 / Conductor.bpm) * 4, function(__:FlxTimer)
+			{
+				FlxG.sound.playMusic(Assets.cache.getSound(currentSong[2]));
+				voicesSound = FlxG.sound.play(Assets.cache.getSound(currentSong[3]));
+				countingDown = false;
+			});
+		});
+	}
+
+	public static function playSong(song:String, difficulty:Difficulty, mode:Mode)
+	{
+		currentSong = SongDatabase.getSong(song, difficulty);
+		FlxG.switchState(new PlayState());
+	}
+
+	/* 	override public function destroy()
+		{
+			forEach(function(object:FlxBasic)
+			{
+				object.destroy();
+			});
+
+			super.destroy();
+	}*/
 	function quit()
 	{
 		switch (mode)

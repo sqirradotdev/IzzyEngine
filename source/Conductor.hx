@@ -39,7 +39,10 @@ class Conductor extends FlxBasic
 
 		// Update beat
 		var beatF:Float = time * bpm / 60.0;
-		beat = Std.int(beatF);
+		if (time < 0)
+			beat = Std.int(beatF) - 1;
+		else
+			beat = Std.int(beatF);
 
 		if (prevBeat != beat)
 		{

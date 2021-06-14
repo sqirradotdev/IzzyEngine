@@ -1,5 +1,6 @@
 package;
 
+import SongDatabase.Difficulty;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.transition.FlxTransitionableState;
@@ -56,7 +57,14 @@ class FreeplayState extends MusicBeatState
 		}
 
 		changeSong(songSelection);
-		if (!firstTime)
+		if (firstTime)
+		{
+			// This was on purpose, to give a sense of transition
+			// (shamelessly stolen from osu!)
+			FlxG.sound.music.volume = 0.2;
+			musicTween = FlxTween.tween(FlxG.sound.music, {volume: 1.0}, 1.0);
+		}
+		else
 		{
 			changeSongPlaying();
 			firstTime = true;
@@ -169,6 +177,6 @@ class FreeplayState extends MusicBeatState
 	function selectSong()
 	{
 		FlxG.sound.music.stop();
-		FlxG.switchState(new PlayState());
+		PlayState.playSong(songs[songSelection][0], NORMAL, FREEPLAY);
 	}
 }

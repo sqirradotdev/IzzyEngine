@@ -1,6 +1,7 @@
 package;
 
 import haxe.Json;
+import haxe.macro.Type.AnonType;
 import lime.utils.Assets;
 import sys.io.File;
 #if desktop
@@ -59,32 +60,57 @@ class SongDatabase
 		{
 			for (song in week.songs)
 			{
-				var dir:String = "songs/" + song + "/";
-				var path:String = dir + "songMetadata.json";
-				var songMetadata:SongMetadata = {
-					songName: "",
-					bpm: 100,
-					characters: ["dad", "bf"],
-					stage: "stage"
-				};
-
-				if (FileSystem.exists(path))
-					songMetadata = Json.parse(File.getContent(path));
-				else
-				{
-					trace("Song metadata file for \"" + song + "\" is missing. Creating one");
-					songMetadata.songName = song;
-
-					if (!FileSystem.exists(dir))
-						FileSystem.createDirectory(dir);
-
-					File.saveContent(path, Json.stringify(songMetadata, "\t"));
-				}
-
+				var songMetadata:SongMetadata = getSongMetadata(song);
 				songs.push([song, week.storyMenuCharacters[0], songMetadata.bpm]);
 			}
 		}
 
 		return songs;
+	}
+
+	public static function getSongMetadata(song:String):SongMetadata
+	{
+		var dir:String = "songs/" + song + "/";
+		var path:String = dir + "songMetadata.json";
+		var songMetadata:SongMetadata = {
+			songName: "",
+			bpm: 100,
+			characters: ["dad", "bf"],
+			stage: "stage"
+		};
+
+		if (FileSystem.exists(path))
+			songMetadata = Json.parse(File.getContent(path));
+		else
+		{
+			trace("Song metadata file for \"" + song + "\" is missing. Creating one");
+			songMetadata.songName = song;
+
+			if (!FileSystem.exists(dir))
+				FileSystem.createDirectory(dir);
+
+			File.saveContent(path, Json.stringify(songMetadata, "\t"));
+		}
+
+		return songMetadata;
+	}
+
+	public static function getSong(song:String, difficulty:Difficulty):Array<Dynamic>
+	{
+		var dir:String = "songs/" + song + "/";
+		var chartPath:String = "";
+		var songMetadata:SongMetadata = getSongMetadata(song);
+
+		switch (difficulty)
+		{
+			case EASY:
+				chartPath = dir + "easy.chart";
+			case NORMAL:
+				chartPath = dir + "normal.chart";
+			case HARD:
+				chartPath = dir + "hard.chart";
+		}
+
+		return [songMetadata, chartPath, dir + "Inst.ogg", dir + "Voices.ogg"];
 	}
 }
