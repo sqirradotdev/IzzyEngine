@@ -45,7 +45,7 @@ class Main extends Sprite
 		splash.addEventListener(Event.ENTER_FRAME, onSplashEnterFrame);
 	}
 
-	function onSplashEnterFrame(amogus)
+	function onSplashEnterFrame(_)
 	{
 		// Shows the splash screen one frame, then load the actual game
 		if (!splashShown)
