@@ -21,7 +21,7 @@ class Overlay extends TextField
 
 		x = xPos;
 		y = yPos;
-		width = 150;
+		width = 200;
 		height = 70;
 
 		selectable = false;
