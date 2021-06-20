@@ -35,6 +35,7 @@ typedef SongMetadata =
 class SongDatabase
 {
 	public static var weeks:Array<Week>;
+	public static var songs:Array<SongMetadata> = [];
 
 	public static function updateWeekList():Bool
 	{
@@ -49,23 +50,23 @@ class SongDatabase
 			return false;
 		}
 
+		trace("Week list updated");
+
 		return true;
 	}
 
-	public static function getSongs():Array<Array<Dynamic>>
+	public static function updateSongList()
 	{
-		var songs:Array<Array<Dynamic>> = [];
-
 		for (week in weeks)
 		{
 			for (song in week.songs)
 			{
 				var songMetadata:SongMetadata = getSongMetadata(song);
-				songs.push([song, week.storyMenuCharacters[0], songMetadata.bpm]);
+				songs.push(songMetadata);
 			}
 		}
 
-		return songs;
+		trace("Song list updated");
 	}
 
 	public static function getSongMetadata(song:String):SongMetadata
@@ -95,11 +96,10 @@ class SongDatabase
 		return songMetadata;
 	}
 
-	public static function getSong(song:String, difficulty:Difficulty):Array<Dynamic>
+	public static function getSongPaths(song:String, difficulty:Difficulty = NORMAL):Array<String>
 	{
 		var dir:String = "songs/" + song + "/";
 		var chartPath:String = "";
-		var songMetadata:SongMetadata = getSongMetadata(song);
 
 		switch (difficulty)
 		{
@@ -111,6 +111,6 @@ class SongDatabase
 				chartPath = dir + "hard.chart";
 		}
 
-		return [songMetadata, chartPath, dir + "Inst.ogg", dir + "Voices.ogg"];
+		return [chartPath, dir + "Inst.ogg", dir + "Voices.ogg"];
 	}
 }

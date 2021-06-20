@@ -22,9 +22,12 @@ enum Mode
 
 class PlayState extends MusicBeatState
 {
-	static var currentSong:Array<Dynamic>;
+	var currentSong:SongMetadata;
+	var currentWeek:Int;
+	var currentDifficulty:Difficulty = NORMAL;
+	var currentMode:Mode = FREEPLAY;
 
-	var mode:Mode = FREEPLAY;
+	var songPaths:Array<String>;
 
 	var countingDown:Bool = false;
 
@@ -45,9 +48,27 @@ class PlayState extends MusicBeatState
 
 	var countDownTimer:FlxTimer;
 
-	public function new()
+	public function new(?song:String, ?week:Int, ?difficulty:Difficulty, ?mode:Mode)
 	{
 		super();
+
+		if (difficulty != null)
+			currentDifficulty = difficulty;
+
+		if (mode != null)
+			currentMode = mode;
+
+		switch (currentMode)
+		{
+			case STORY:
+				currentWeek = week;
+			// TODO: Add story mode loading
+			case FREEPLAY:
+				if (song != null)
+				{
+					currentSong = SongDatabase.getSongMetadata(song);
+				}
+		}
 	}
 
 	override public function create()
@@ -100,13 +121,10 @@ class PlayState extends MusicBeatState
 		add(player);
 		player.animation.play("idle");
 
-		Conductor.bpm = currentSong[0].bpm;
+		songPaths = SongDatabase.getSongPaths(currentSong.songName, currentDifficulty);
 
-		if (!Assets.cache.hasSound(currentSong[3]))
-		{
-			var voices:Sound = Sound.fromFile("./" + currentSong[3]);
-			Assets.cache.setSound(currentSong[3], voices);
-		}
+		// Temporary bpm assignment
+		Conductor.bpm = currentSong.bpm;
 
 		startCountDown();
 	}
@@ -159,31 +177,16 @@ class PlayState extends MusicBeatState
 			countingDown = true;
 			countDownTimer.start((60.0 / Conductor.bpm) * 4, function(__:FlxTimer)
 			{
-				FlxG.sound.playMusic(Assets.cache.getSound(currentSong[2]));
-				voicesSound = FlxG.sound.play(Assets.cache.getSound(currentSong[3]));
+				FlxG.sound.playMusic(Assets.cache.getSound(songPaths[1]));
+				voicesSound = FlxG.sound.play(Assets.cache.getSound(songPaths[2]));
 				countingDown = false;
 			});
 		});
 	}
 
-	public static function playSong(song:String, difficulty:Difficulty, mode:Mode)
-	{
-		currentSong = SongDatabase.getSong(song, difficulty);
-		FlxG.switchState(new PlayState());
-	}
-
-	/* 	override public function destroy()
-		{
-			forEach(function(object:FlxBasic)
-			{
-				object.destroy();
-			});
-
-			super.destroy();
-	}*/
 	function quit()
 	{
-		switch (mode)
+		switch (currentMode)
 		{
 			case FREEPLAY:
 				FlxG.switchState(new FreeplayState());

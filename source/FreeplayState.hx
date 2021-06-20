@@ -25,8 +25,6 @@ class FreeplayState extends MusicBeatState
 
 	var lerpedSongSelection:Float = 0;
 
-	var songs:Array<Array<Dynamic>>;
-
 	var bg:FlxSprite;
 	var songItems:FlxSpriteGroup;
 	var musicTween:FlxTween;
@@ -35,7 +33,6 @@ class FreeplayState extends MusicBeatState
 	{
 		super();
 		persistentUpdate = true;
-		songs = SongDatabase.getSongs();
 	}
 
 	override public function create():Void
@@ -49,9 +46,9 @@ class FreeplayState extends MusicBeatState
 		songItems = new FlxSpriteGroup();
 		add(songItems);
 
-		for (song in songs)
+		for (song in SongDatabase.songs)
 		{
-			var withSpace:String = StringTools.replace(song[0], "-", " ");
+			var withSpace:String = StringTools.replace(song.songName, "-", " ");
 			var alphabet:Alphabet = new Alphabet(songItems.length * 25, songItems.length * 160, withSpace);
 			songItems.add(alphabet);
 		}
@@ -137,10 +134,10 @@ class FreeplayState extends MusicBeatState
 	{
 		songSelection = selection;
 
-		if (songSelection >= songs.length) // Loop back to first option
+		if (songSelection >= SongDatabase.songs.length) // Loop back to first option
 			songSelection = 0;
 		if (songSelection < 0) // Loop forward to last option
-			songSelection = songs.length - 1;
+			songSelection = SongDatabase.songs.length - 1;
 
 		for (x in 0...songItems.length)
 		{
@@ -153,30 +150,21 @@ class FreeplayState extends MusicBeatState
 
 	function changeSongPlaying()
 	{
-		var instPath:String = "songs/" + songs[songSelection][0] + "/Inst.ogg";
+		Conductor.bpm = SongDatabase.songs[songSelection].bpm;
 
-		if (FileSystem.exists(instPath))
-		{
-			Conductor.bpm = songs[songSelection][2];
-
-			if (!Assets.cache.hasSound(instPath))
-			{
-				var inst:Sound = Sound.fromFile("./" + instPath);
-				Assets.cache.setSound(instPath, inst);
-			}
-			FlxG.sound.playMusic(Assets.cache.getSound(instPath));
-		}
+		var songPaths:Array<Dynamic> = SongDatabase.getSongPaths(SongDatabase.songs[songSelection].songName);
+		FlxG.sound.playMusic(Assets.cache.getSound(songPaths[1]));
 
 		if (musicTween != null)
 			musicTween.cancel();
 
-		FlxG.sound.music.volume = 0;
+		FlxG.sound.music.volume = 0.0;
 		musicTween = FlxTween.tween(FlxG.sound.music, {volume: 1.0}, 1.0);
 	}
 
 	function selectSong()
 	{
 		FlxG.sound.music.stop();
-		PlayState.playSong(songs[songSelection][0], NORMAL, FREEPLAY);
+		FlxG.switchState(new PlayState(SongDatabase.songs[songSelection].songName, null, NORMAL, FREEPLAY));
 	}
 }
