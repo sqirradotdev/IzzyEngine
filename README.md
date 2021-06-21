@@ -4,7 +4,18 @@
 
 Friday Night Funkin' Izzy Engine is a complete remake of the original Friday Night Funkin.
 
-Disclaimer: This engine breaks compatibility for vanilla-based engines. Your vanilla charts won't work here.
+# Roadmap
+
+- [x] Un-hardcode characters with json
+- [x] Un-hardcode weeks with json
+- [ ] Un-hardcode stages with hscript
+- [ ] Controls remapping
+- [ ] Charter
+- [ ] Gameplay logic
+- [ ] Song Modchart support with hscript
+- [ ] Customizable UI elements with hscript
+
+More goals will be added as we go.
 
 # License
 
