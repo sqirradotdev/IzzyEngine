@@ -50,6 +50,8 @@ class TitleState extends MusicBeatState
 			transitionInitialized = true;
 		}
 
+		RichPresence.setIdling(TITLE);
+
 		if (introSkipped)
 			transIn = FlxTransitionableState.defaultTransIn;
 		else

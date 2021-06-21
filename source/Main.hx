@@ -30,6 +30,8 @@ class Main extends Sprite
 			Sys.exit(0);
 		}
 
+		RichPresence.startRichPresence();
+
 		addChild(new FlxGame(1280, 720, InitState, 1, 120, 120, true));
 
 		overlay = new Overlay(0, 0);

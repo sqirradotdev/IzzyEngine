@@ -44,6 +44,8 @@ class MainMenuState extends MusicBeatState
 	{
 		super.create();
 
+		RichPresence.setIdling(MAIN_MENU);
+
 		bg = new FlxSprite(-100).loadGraphic(AssetHelper.getAsset("mainMenu/menuBG.png", IMAGE));
 		bg.scrollFactor.x = 0;
 		bg.scrollFactor.y = 0.10;

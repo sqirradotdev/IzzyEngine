@@ -39,6 +39,8 @@ class FreeplayState extends MusicBeatState
 	{
 		super.create();
 
+		RichPresence.setIdling(FREEPLAY_MENU);
+
 		bg = new FlxSprite().loadGraphic(AssetHelper.getAsset("mainMenu/menuBGBlue.png", IMAGE));
 		bg.antialiasing = true;
 		add(bg);
