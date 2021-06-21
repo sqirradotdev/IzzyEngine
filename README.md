@@ -2,6 +2,8 @@
 
 ![License](https://img.shields.io/github/license/gedehari/Funkin-IzzyEngine?style=flat-square) ![Version](https://img.shields.io/github/v/release/gedehari/Funkin-IzzyEngine?style=flat-square) ![Repo Size](https://img.shields.io/github/repo-size/gedehari/Funkin-IzzyEngine?style=flat-square)
 
+![Izzy Engine Logo](img/IzzyEngineLogo.svg)
+
 Friday Night Funkin' Izzy Engine is a complete remake of the original Friday Night Funkin.
 
 # Roadmap
@@ -34,3 +36,4 @@ This game was made with love to Newgrounds and its community. Extra love to Tom 
 ### Friday Night Funkin' Izzy Engine
 
 - [gedehari](https://twitter.com/gedehari) - Owner, maintainer, and programmer
+- [Effects](https://www.youtube.com/channel/UCRwExVyoZ3Nw5sBzAlRJ6fw) - Logo designer
