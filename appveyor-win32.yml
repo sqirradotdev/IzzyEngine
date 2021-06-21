@@ -1,0 +1,30 @@
+version: "{build}"
+
+environment:
+  global:
+    HAXELIB_ROOT: C:\projects\haxelib
+
+install:
+  # http://help.appveyor.com/discussions/problems/5616-not-able-to-build-due-to-problem-in-chocolateyinstallps1
+  - ps: Set-Service wuauserv -StartupType Manual
+  # Install the haxe chocolatey package (https://chocolatey.org/packages/haxe)
+  - cinst haxe --version 4.2.2 -y
+  - RefreshEnv
+  # Setup haxelib
+  - mkdir "%HAXELIB_ROOT%"
+  - haxelib setup "%HAXELIB_ROOT%"
+  # Install project dependencies
+  - haxelib install hscript
+  - haxelib install lime
+  - haxelib install openfl
+  - haxelib install flixel
+  - haxelib run lime setup flixel
+  - haxelib run lime setup
+
+build_script:
+  - haxelib run lime build windows
+
+artifacts:
+  - path: export/release/windows/bin
+    name: Funkin-IzzyEngine-win32
+    type: zip
