@@ -19,6 +19,7 @@ install:
   - haxelib setup "%HAXELIB_ROOT%"
   # Install project dependencies
   - haxelib install hscript
+  - haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
   - haxelib install lime
   - haxelib install openfl
   - haxelib install flixel
