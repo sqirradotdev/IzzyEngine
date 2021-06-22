@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxG;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
 import lime.utils.AssetType;
@@ -32,7 +33,23 @@ class AssetHelper
 
 		if (FileSystem.exists(actualPath)) // Check if it exists in the FileSystem (desktop only)
 		{
-			if (Assets.exists(actualPath)) // Check if it exists in the embedded assets library
+			if (FlxG.bitmap.checkCache(actualPath) || Assets.cache.hasSound(actualPath)) // Check if it exists in the AssetCache library
+			{
+				#if debug
+				trace(type + " asset from cache: " + actualPath);
+				#end
+
+				switch (type)
+				{
+					case IMAGE:
+						return FlxG.bitmap.get(actualPath);
+					case SOUND, MUSIC:
+						return Assets.cache.getSound(actualPath);
+					default:
+						return null;
+				}
+			}
+			else if (Assets.exists(actualPath)) // Check if it exists in the embedded assets library
 			{
 				#if debug
 				trace(type + " asset from ID: " + actualPath);
