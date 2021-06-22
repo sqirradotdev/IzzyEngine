@@ -84,7 +84,7 @@ class InitState extends FlxState
 			else
 			{
 				text = new FlxText(0, 0, 0,
-					"Uh oh! weeks.json is missing or corrupt.\nPlease check the 'data' folder.\nIf in doubt, re-extract the zip archive of this game.");
+					"Uh oh! weeks.json is missing or corrupt.\nPlease check the 'data' folder.\nIf in doubt, re-extract the zip archive of this game.\n");
 				text.setFormat("_sans", 24, FlxColor.WHITE, CENTER);
 				text.updateHitbox();
 				text.screenCenter(X);
