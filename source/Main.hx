@@ -19,10 +19,10 @@ class Main extends Sprite
 	{
 		super();
 
-		// Print game information
+		// Print game name and information to system console
 		Sys.println(Lib.application.meta["name"] + " v" + Lib.application.meta["version"]);
 
-		// Totally normal code
+		// :troll:
 		if (!FileSystem.exists("./assets/do_not_delete.png"))
 		{
 			trace("Problem?");
@@ -37,7 +37,7 @@ class Main extends Sprite
 		overlay = new Overlay(0, 0);
 		addChild(overlay);
 
-		// Some changes to default settings
+		// Changes to HaxeFlixel default settings
 		FlxG.sound.muteKeys = null;
 		FlxG.sound.volumeUpKeys = null;
 		FlxG.sound.volumeDownKeys = null;
@@ -52,7 +52,7 @@ class Main extends Sprite
 		FlxG.console.registerObject("Conductor", Conductor);
 		#end
 
-		// Add event listeners for lowering global volume when unfocused
+		// Add event listeners for window focus
 		Application.current.window.onFocusOut.add(onWindowFocusOut);
 		Application.current.window.onFocusIn.add(onWindowFocusIn);
 	}
@@ -61,19 +61,25 @@ class Main extends Sprite
 	{
 		trace("Game unfocused");
 
+		// Lower global volume when unfocused
 		if (focusMusicTween != null)
 			focusMusicTween.cancel();
-
 		focusMusicTween = FlxTween.tween(FlxG.sound, {volume: 0.3}, 0.5);
+
+		// Conserve power by lowering draw framerate
+		FlxG.drawFramerate = 20;
 	}
 
 	function onWindowFocusIn()
 	{
 		trace("Game focused");
 
+		// Normal global volume when focused
 		if (focusMusicTween != null)
 			focusMusicTween.cancel();
-
 		focusMusicTween = FlxTween.tween(FlxG.sound, {volume: 1.0}, 0.5);
+
+		// Normal framerate when focused
+		FlxG.drawFramerate = 120;
 	}
 }
