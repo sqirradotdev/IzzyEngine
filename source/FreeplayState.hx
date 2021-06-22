@@ -55,7 +55,7 @@ class FreeplayState extends MusicBeatState
 			songItems.add(alphabet);
 		}
 
-		changeSong(songSelection);
+		changeSongSelection(songSelection);
 		if (firstTime)
 		{
 			// This was on purpose, to give a sense of transition
@@ -86,13 +86,13 @@ class FreeplayState extends MusicBeatState
 		{
 			if (FlxG.keys.justPressed.UP)
 			{
-				changeSong(songSelection - 1);
+				changeSongSelection(songSelection - 1);
 				changeSongPlaying();
 				FlxG.sound.play(AssetHelper.getAsset("scrollMenu.ogg", SOUND));
 			}
 			if (FlxG.keys.justPressed.DOWN)
 			{
-				changeSong(songSelection + 1);
+				changeSongSelection(songSelection + 1);
 				changeSongPlaying();
 				FlxG.sound.play(AssetHelper.getAsset("scrollMenu.ogg", SOUND));
 			}
@@ -132,7 +132,7 @@ class FreeplayState extends MusicBeatState
 		bg.scale.y += 0.015;
 	}
 
-	function changeSong(selection:Int = 0)
+	function changeSongSelection(selection:Int = 0)
 	{
 		songSelection = selection;
 

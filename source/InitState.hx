@@ -79,7 +79,7 @@ class InitState extends FlxState
 					{asset: diamond, width: 32, height: 32}, new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
 
 				SongDatabase.updateSongList();
-				loadSongs();
+				cacheSongs();
 			}
 			else
 			{
@@ -105,7 +105,7 @@ class InitState extends FlxState
 			framePostDraw = true;
 	}
 
-	function loadSongs():Void
+	function cacheSongs():Void
 	{
 		threadPool = new ThreadPool(0, 4);
 		threadPool.doWork.add(function(songPaths:Array<String>)
@@ -130,13 +130,7 @@ class InitState extends FlxState
 
 			if (loaded == SongDatabase.songs.length)
 			{
-				FlxTween.tween(progressBar, {alpha: 0.0}, 0.7);
-				FlxTween.tween(spinner, {alpha: 0.0}, 0.7);
-
-				new FlxTimer().start(0.7, function(_:FlxTimer)
-				{
-					FlxG.switchState(new TitleState());
-				});
+				startGame();
 			}
 		});
 
@@ -145,5 +139,16 @@ class InitState extends FlxState
 			var songPaths:Array<String> = SongDatabase.getSongPaths(song.songName);
 			threadPool.queue(songPaths);
 		}
+	}
+
+	function startGame()
+	{
+		FlxTween.tween(progressBar, {alpha: 0.0}, 0.7);
+		FlxTween.tween(spinner, {alpha: 0.0}, 0.7);
+
+		new FlxTimer().start(0.7, function(_:FlxTimer)
+		{
+			FlxG.switchState(new TitleState());
+		});
 	}
 }
