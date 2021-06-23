@@ -11,7 +11,6 @@ import flixel.system.FlxAssets;
 import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.util.FlxTimer;
-import openfl.media.Sound;
 import openfl.utils.Assets;
 
 enum Mode
@@ -76,6 +75,12 @@ class PlayState extends MusicBeatState
 		super.create();
 		persistentUpdate = true;
 
+		// Cache intro sounds to prevent hiccups.
+		AssetHelper.getAsset("intro3.ogg", SOUND);
+		AssetHelper.getAsset("intro2.ogg", SOUND);
+		AssetHelper.getAsset("intro1.ogg", SOUND);
+		AssetHelper.getAsset("introGo.ogg", SOUND);
+
 		stageCamera = new FlxCamera();
 		add(stageCamera);
 
@@ -136,9 +141,7 @@ class PlayState extends MusicBeatState
 		if (countDownTimer != null)
 		{
 			if (countingDown)
-			{
 				Conductor.time = -countDownTimer.timeLeft;
-			}
 		}
 
 		if (subState == null)
@@ -156,16 +159,33 @@ class PlayState extends MusicBeatState
 
 	override function onBeat():Void
 	{
-		switch (Conductor.beat)
+		if (countingDown)
 		{
-			case -4:
-				FlxG.sound.play(AssetHelper.getAsset("intro3.ogg", SOUND));
-			case -3:
-				FlxG.sound.play(AssetHelper.getAsset("intro2.ogg", SOUND));
-			case -2:
-				FlxG.sound.play(AssetHelper.getAsset("intro1.ogg", SOUND));
-			case -1:
-				FlxG.sound.play(AssetHelper.getAsset("introGo.ogg", SOUND));
+			switch (Conductor.beat)
+			{
+				case -4:
+					FlxG.sound.play(AssetHelper.getAsset("intro3.ogg", SOUND));
+				case -3:
+					FlxG.sound.play(AssetHelper.getAsset("intro2.ogg", SOUND));
+				case -2:
+					FlxG.sound.play(AssetHelper.getAsset("intro1.ogg", SOUND));
+				case -1:
+					FlxG.sound.play(AssetHelper.getAsset("introGo.ogg", SOUND));
+			}
+		}
+
+		if ((Conductor.beat % 4) == 0)
+		{
+			if (voicesSound != null)
+			{
+				var delta:Float = FlxG.sound.music.time - voicesSound.time;
+				trace("Music Vocal Delta: " + delta);
+				if (Math.abs(delta) > 10)
+				{
+					trace("resync vocal");
+					voicesSound.time = FlxG.sound.music.time;
+				}
+			}
 		}
 	}
 
