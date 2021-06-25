@@ -11,6 +11,10 @@ import sys.FileSystem;
 
 class Main extends Sprite
 {
+	// FPS settings
+	final normalFps:Int = 60;
+	final lowFps:Int = 20;
+
 	public static var overlay:Overlay;
 
 	var focusMusicTween:FlxTween;
@@ -32,7 +36,7 @@ class Main extends Sprite
 
 		RichPresence.startRichPresence();
 
-		addChild(new FlxGame(1280, 720, InitState, 1, 120, 120, true));
+		addChild(new FlxGame(1280, 720, InitState, 1, normalFps, normalFps, true));
 
 		overlay = new Overlay(0, 0);
 		addChild(overlay);
@@ -67,7 +71,7 @@ class Main extends Sprite
 		focusMusicTween = FlxTween.tween(FlxG.sound, {volume: 0.3}, 0.5);
 
 		// Conserve power by lowering draw framerate
-		FlxG.drawFramerate = 20;
+		FlxG.drawFramerate = lowFps;
 	}
 
 	function onWindowFocusIn()
@@ -80,6 +84,6 @@ class Main extends Sprite
 		focusMusicTween = FlxTween.tween(FlxG.sound, {volume: 1.0}, 0.5);
 
 		// Normal framerate when focused
-		FlxG.drawFramerate = 120;
+		FlxG.drawFramerate = normalFps;
 	}
 }
