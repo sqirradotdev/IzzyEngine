@@ -14,6 +14,9 @@ import lime.app.Application;
 
 class RichPresence
 {
+	static final largeImageKey:String = "icon";
+	static final largeImageText:String = "Izzy Engine";
+
 	public static function startRichPresence()
 	{
 		trace("Starting Rich Presence...");
@@ -34,12 +37,12 @@ class RichPresence
 
 	static function onError(_code:Int, _message:String)
 	{
-		trace("Oops! Error code " + _code + " : " + _message);
+		trace("Error code " + _code + " : " + _message);
 	}
 
 	static function onDisconnected(_code:Int, _message:String)
 	{
-		trace("Aw snap! Disconnected code " + _code + " : " + _message);
+		trace("Disconnected code " + _code + " : " + _message);
 	}
 
 	public static function setIdling(type:IdleType)
@@ -47,6 +50,8 @@ class RichPresence
 		DiscordRpc.presence({
 			details: type,
 			state: "Idling",
+			largeImageKey: largeImageKey,
+			largeImageText: largeImageText
 		});
 	}
 
