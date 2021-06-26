@@ -7,6 +7,8 @@ import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import haxe.Json;
+import sys.io.File;
 
 class TitleState extends MusicBeatState
 {
@@ -14,6 +16,9 @@ class TitleState extends MusicBeatState
 	static var introSkipped:Bool = false;
 
 	var entered:Bool = false;
+
+	var introTexts:Array<Array<String>>;
+	var introTextIndex:Int = 0;
 
 	var newgroundsLogo:FlxSprite;
 	var logoBumpin:FlxSprite;
@@ -39,6 +44,9 @@ class TitleState extends MusicBeatState
 		transOut = FlxTransitionableState.defaultTransOut;
 
 		super.create();
+
+		introTexts = Json.parse(File.getContent("./data/introTexts.json"));
+		introTextIndex = FlxG.random.int(0, introTexts.length - 1);
 
 		textGroup = new FlxTypedGroup<FlxObject>();
 		add(textGroup);
@@ -142,9 +150,9 @@ class TitleState extends MusicBeatState
 					deleteAllTexts();
 					newgroundsLogo.visible = false;
 				case 9:
-					addText("not the original game");
+					addText(introTexts[introTextIndex][0]);
 				case 11:
-					addText("this is a complete remake");
+					addText(introTexts[introTextIndex][1]);
 				case 12:
 					deleteAllTexts();
 				case 13:
