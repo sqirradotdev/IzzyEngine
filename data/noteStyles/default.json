@@ -1,0 +1,14 @@
+{
+    "name": "normal",
+    "atlasPath": "NOTE_assets",
+    "globalNoteScale": 0.7,
+    "animations":
+    {
+        "arrowAnimPrefix": ["purple0", "blue0", "green0", "red0"],
+		"tailHoldAnimPrefix": ["purple hold piece", "blue hold piece", "green hold piece", "red hold piece"],
+		"tailEndAnimPrefix": ["pruple end hold", "blue hold end", "green hold end", "red hold end"],
+		"strumIdleAnimPrefix": ["arrowLEFT", "arrowDOWN", "arrowUP", "arrowRIGHT"],
+		"strumPressAnimPrefix": ["left press", "down press", "up press", "right press"],
+		"strumHitAnimPrefix": ["left confirm", "down confirm", "up confirm", "right confirm"]
+    }
+}
