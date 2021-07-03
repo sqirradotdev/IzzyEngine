@@ -151,8 +151,6 @@ class Note extends FlxTypedSpriteGroup<FlxSprite>
 		updateNoteHold();
 
 		add(arrow);
-
-		trace(active);
 	}
 
 	public function updateNoteHold()
@@ -236,11 +234,14 @@ class StrumLine extends FlxTypedSpriteGroup<FlxTypedSpriteGroup<FlxSprite>>
 
 	public function addNote(strumIndex:Int, time:Float, holdTime:Float = 0.0)
 	{
-		var note:Note = new Note(0, 0, strumIndex, time, holdTime, noteSpeed);
-		// Hide note to minimize rendering cost
-		note.visible = false;
-		members[strumIndex].add(note);
-		// Store in a separate array for easy access
-		noteObjects.push(note);
+		if (strumIndex < 4)
+		{
+			var note:Note = new Note(0, 0, strumIndex, time, holdTime, noteSpeed);
+			// Hide note to minimize rendering cost
+			note.visible = false;
+			members[strumIndex].add(note);
+			// Store in a separate array for easy access
+			noteObjects.push(note);
+		}
 	}
 }

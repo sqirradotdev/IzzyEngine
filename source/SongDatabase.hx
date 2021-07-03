@@ -104,12 +104,19 @@ class SongDatabase
 		switch (difficulty)
 		{
 			case EASY:
-				chartPath = dir + "easy.chart";
+				chartPath = dir + "easy";
 			case NORMAL:
-				chartPath = dir + "normal.chart";
+				chartPath = dir + "normal";
 			case HARD:
-				chartPath = dir + "hard.chart";
+				chartPath = dir + "hard";
 		}
+
+		if (FileSystem.exists("./" + chartPath + ".json"))
+			chartPath += ".json";
+		else if (FileSystem.exists("./" + chartPath + ".chart"))
+			chartPath += ".chart";
+		else
+			chartPath = "";
 
 		return [chartPath, dir + "Inst.ogg", dir + "Voices.ogg"];
 	}

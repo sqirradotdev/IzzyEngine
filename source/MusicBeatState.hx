@@ -21,6 +21,7 @@ class MusicBeatState extends FlxUIState
 		add(conductor);
 
 		FlxG.watch.add(Conductor, "time");
+		FlxG.watch.add(Conductor, "interpTime");
 		FlxG.watch.add(Conductor, "beat");
 	}
 

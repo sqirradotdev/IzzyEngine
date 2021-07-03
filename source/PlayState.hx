@@ -1,5 +1,8 @@
 package;
 
+import ChartReader.ChartData;
+import GameplayUI.Note;
+import GameplayUI.StrumLine;
 import SongDatabase.Difficulty;
 import SongDatabase.SongMetadata;
 import flixel.FlxBasic;
@@ -10,8 +13,13 @@ import flixel.FlxSprite;
 import flixel.system.FlxAssets;
 import flixel.system.FlxSound;
 import flixel.text.FlxText;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
+import haxe.Json;
+import haxe.macro.Type.AnonType;
 import openfl.utils.Assets;
+import sys.io.File;
 
 enum Mode
 {
@@ -21,6 +29,7 @@ enum Mode
 
 class PlayState extends MusicBeatState
 {
+	// Information on what's currently playing right now
 	var currentSong:SongMetadata;
 	var currentWeek:Int;
 	var currentDifficulty:Difficulty = NORMAL;
@@ -29,6 +38,9 @@ class PlayState extends MusicBeatState
 	var songPaths:Array<String>;
 
 	var countingDown:Bool = false;
+
+	var enemyNotes:ChartData = [];
+	var playerNotes:ChartData = [];
 
 	var stageCamera:FlxCamera;
 	var uiCamera:FlxCamera;
@@ -43,11 +55,14 @@ class PlayState extends MusicBeatState
 	var gf:FlxSprite;
 	var player:FlxSprite;
 
+	var enemyStrumLine:StrumLine;
+	var playerStrumLine:StrumLine;
+
 	var voicesSound:FlxSound;
 
 	var countDownTimer:FlxTimer;
 
-	public function new(?song:String, ?week:Int, ?difficulty:Difficulty, ?mode:Mode)
+	public function new(song:String, ?week:Int, ?difficulty:Difficulty, ?mode:Mode)
 	{
 		super();
 
@@ -63,10 +78,7 @@ class PlayState extends MusicBeatState
 				currentWeek = week;
 			// TODO: Add story mode loading
 			case FREEPLAY:
-				if (song != null)
-				{
-					currentSong = SongDatabase.getSongMetadata(song);
-				}
+				currentSong = SongDatabase.getSongMetadata(song);
 		}
 	}
 
@@ -75,21 +87,24 @@ class PlayState extends MusicBeatState
 		super.create();
 		persistentUpdate = true;
 
+		processChart();
+
+		// Temporary bpm assignment
+		Conductor.bpm = currentSong.bpm;
+		Conductor.time = 0;
+
 		// Cache intro sounds to prevent hiccups.
 		AssetHelper.getAsset("intro3.ogg", SOUND);
 		AssetHelper.getAsset("intro2.ogg", SOUND);
 		AssetHelper.getAsset("intro1.ogg", SOUND);
 		AssetHelper.getAsset("introGo.ogg", SOUND);
 
-		stageCamera = new FlxCamera();
-		add(stageCamera);
+		stageCamera = FlxG.camera;
 
 		uiCamera = new FlxCamera();
 		add(uiCamera);
 
-		FlxG.cameras.add(stageCamera);
 		FlxG.cameras.add(uiCamera);
-		FlxG.cameras.setDefaultDrawTarget(stageCamera, true);
 
 		bg = new FlxSprite(-600, -200).loadGraphic(AssetHelper.getAsset("stageback.png", IMAGE, "week1"));
 		bg.antialiasing = true;
@@ -126,12 +141,27 @@ class PlayState extends MusicBeatState
 		add(player);
 		player.animation.play("idle");
 
-		songPaths = SongDatabase.getSongPaths(currentSong.songName, currentDifficulty);
+		enemyStrumLine = new StrumLine(70, 50, 1.0, 2.6);
+		enemyStrumLine.camera = uiCamera;
+		add(enemyStrumLine);
 
-		// Temporary bpm assignment
-		Conductor.bpm = currentSong.bpm;
+		playerStrumLine = new StrumLine(750, 50, 1.0, 2.6);
+		playerStrumLine.camera = uiCamera;
+		add(playerStrumLine);
+
+		for (noteData in enemyNotes)
+		{
+			enemyStrumLine.addNote(noteData.whichStrumPart, noteData.time, noteData.holdTime);
+		}
+
+		for (noteData in playerNotes)
+		{
+			playerStrumLine.addNote(noteData.whichStrumPart, noteData.time, noteData.holdTime);
+		}
 
 		startCountDown();
+
+		// FlxTween.tween(enemyStrumLine, {noteSpeed: 1.5}, 0.2, {type: PINGPONG, ease: FlxEase.sineInOut});
 	}
 
 	override public function update(elapsed:Float)
@@ -143,6 +173,9 @@ class PlayState extends MusicBeatState
 			if (countingDown)
 				Conductor.time = -countDownTimer.timeLeft;
 		}
+
+		enemyStrumLine.time = Conductor.interpTime;
+		playerStrumLine.time = Conductor.interpTime;
 
 		if (subState == null)
 		{
@@ -178,15 +211,32 @@ class PlayState extends MusicBeatState
 		{
 			if (voicesSound != null)
 			{
-				var delta:Float = FlxG.sound.music.time - voicesSound.time;
-				trace("Music Vocal Delta: " + delta);
-				if (Math.abs(delta) > 10)
+				var delta:Float = voicesSound.time - FlxG.sound.music.time;
+				if (Math.abs(delta) >= 5)
 				{
-					trace("resync vocal");
+					trace("Delta is " + delta + ", resyncing");
 					voicesSound.time = FlxG.sound.music.time;
 				}
 			}
 		}
+	}
+
+	function processChart()
+	{
+		songPaths = SongDatabase.getSongPaths(currentSong.songName, NORMAL);
+		trace(songPaths);
+
+		var chartData:ChartData = ChartReader.readChart(songPaths[0]);
+		for (noteData in chartData)
+		{
+			if (noteData.whoseStrum == 1)
+				playerNotes.push(noteData);
+			else
+				enemyNotes.push(noteData);
+		}
+
+		trace("Enemy notes:\n" + enemyNotes);
+		trace("Player notes:\n" + playerNotes);
 	}
 
 	function startCountDown()
