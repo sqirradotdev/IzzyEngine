@@ -2,7 +2,6 @@ package;
 
 import flixel.FlxG;
 import flixel.FlxGame;
-import flixel.FlxState;
 import flixel.tweens.FlxTween;
 import lime.app.Application;
 import openfl.Lib;
@@ -12,7 +11,7 @@ import sys.FileSystem;
 class Main extends Sprite
 {
 	// FPS settings
-	final normalFps:Int = 60;
+	final normalFps:Int = 120;
 	final lowFps:Int = 20;
 
 	public static var overlay:Overlay;
@@ -26,14 +25,6 @@ class Main extends Sprite
 		// Print game name and information to system console
 		Sys.println(Lib.application.meta["name"] + " v" + Lib.application.meta["version"]);
 
-		// :troll:
-		if (!FileSystem.exists("./assets/do_not_delete.png"))
-		{
-			trace("Problem?");
-			Application.current.window.alert("It says do not delete, can't you read?");
-			Sys.exit(0);
-		}
-
 		RichPresence.startRichPresence();
 
 		addChild(new FlxGame(1280, 720, InitState, 1, normalFps, normalFps, true));
@@ -46,7 +37,7 @@ class Main extends Sprite
 		FlxG.sound.volumeUpKeys = null;
 		FlxG.sound.volumeDownKeys = null;
 		FlxG.autoPause = false;
-		FlxG.fixedTimestep = false; // Needed for consistent lerp speed
+		FlxG.fixedTimestep = false;
 		FlxG.mouse.useSystemCursor = true;
 		FlxG.mouse.visible = false;
 		FlxG.console.autoPause = false;
@@ -70,7 +61,7 @@ class Main extends Sprite
 			focusMusicTween.cancel();
 		focusMusicTween = FlxTween.tween(FlxG.sound, {volume: 0.3}, 0.5);
 
-		// Conserve power by lowering draw framerate
+		// Conserve power by lowering draw framerate when unfocuced
 		FlxG.drawFramerate = lowFps;
 	}
 
@@ -83,7 +74,7 @@ class Main extends Sprite
 			focusMusicTween.cancel();
 		focusMusicTween = FlxTween.tween(FlxG.sound, {volume: 1.0}, 0.5);
 
-		// Normal framerate when focused
+		// Bring framerate back when focused
 		FlxG.drawFramerate = normalFps;
 	}
 }
