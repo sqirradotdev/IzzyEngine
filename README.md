@@ -15,7 +15,7 @@ As of this writing, this engine is unfinished, it hasn't even hit alpha yet. So,
 - [ ] Un-hardcode stages with hscript
 - [ ] Controls remapping
 - [ ] Charter
-- [ ] Gameplay logic
+- [x] Gameplay logic (partial)
 - [ ] Song Modchart support with hscript
 - [ ] Customizable UI elements with hscript
 
