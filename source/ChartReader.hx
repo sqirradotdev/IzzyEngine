@@ -10,14 +10,20 @@ import sys.io.File;
 	var VANILLA_V2 = "vanilla_v2";
 }
 
-typedef ChartData = Array<NoteData>;
+typedef ChartData =
+{
+	var bpm:Int;
+	var noteSpeed:Float;
+	var enemyNotes:Array<NoteData>;
+	var playerNotes:Array<NoteData>;
+}
 
 typedef NoteData =
 {
 	var time:Float;
 	var holdTime:Float;
 	var whoseStrum:Int;
-	var whichStrumPart:Int;
+	var strumIndex:Int;
 }
 
 class ChartReader
@@ -33,7 +39,7 @@ class ChartReader
 			return readVanilla(File.getContent("./" + path));
 		}
 
-		// TODO: Make IzzyEngine chart standard
+		// TODO: Make Izzy Engine chart standard
 		return null;
 	}
 
@@ -42,9 +48,17 @@ class ChartReader
 	 */
 	public static function readVanilla(contents:String):ChartData
 	{
-		var returnArray:Array<NoteData> = [];
+		var chartData:ChartData = {
+			bpm: 0,
+			noteSpeed: 1.0,
+			enemyNotes: [],
+			playerNotes: []
+		};
 
 		var parsedJson = Json.parse(contents);
+
+		chartData.noteSpeed = Reflect.field(Reflect.field(parsedJson, "song"), "speed");
+
 		var sectionInformation:Array<AnonType> = Reflect.field(Reflect.field(parsedJson, "song"), "notes");
 		for (notes in sectionInformation)
 		{
@@ -55,27 +69,34 @@ class ChartReader
 			{
 				// True means player, false means enemy (following mustHitSection)
 				var whoseStrum:Bool = mustHitSection;
-				var whichStrumPart:Int = sectionNote[1];
+				var strumIndex:Int = sectionNote[1];
 				var noteTime:Float = sectionNote[0] / 1000;
 				var holdTime:Float = sectionNote[2] / 1000;
 
-				if (whichStrumPart > 3)
+				if (strumIndex > 3)
 				{
-					whichStrumPart -= 4;
+					strumIndex -= 4;
 					whoseStrum = !whoseStrum;
 				}
 
-				var whoseStrumIndex:Int = whoseStrum ? 1 : 0;
+				if (strumIndex < 4)
+				{
+					var whoseStrumIndex:Int = whoseStrum ? 1 : 0;
+					var noteData:NoteData = {
+						time: noteTime,
+						holdTime: holdTime,
+						whoseStrum: whoseStrumIndex,
+						strumIndex: strumIndex
+					};
 
-				returnArray.push({
-					time: noteTime,
-					holdTime: holdTime,
-					whoseStrum: whoseStrumIndex,
-					whichStrumPart: whichStrumPart
-				});
+					if (whoseStrumIndex == 0)
+						chartData.enemyNotes.push(noteData);
+					else
+						chartData.playerNotes.push(noteData);
+				}
 			}
 		}
 
-		return returnArray;
+		return chartData;
 	}
 }

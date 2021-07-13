@@ -2,12 +2,14 @@ package;
 
 import flixel.FlxSprite;
 import flixel.addons.display.FlxTiledSprite;
+import flixel.animation.FlxAnimation;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFrame;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import haxe.Json;
 import openfl.display.BitmapData;
+import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import sys.FileSystem;
 import sys.io.File;
@@ -87,23 +89,26 @@ class NoteStyle
 	}
 }
 
-class Note extends FlxTypedSpriteGroup<FlxSprite>
+class NoteObject extends FlxTypedSpriteGroup<FlxSprite>
 {
+	public var strumIndex:Int;
 	public var time:Float;
 	public var holdTime:Float;
+	public var holdProgress:Float = 0.0;
 	public var noteSpeed:Float = 1.0;
 
-	var prevNoteSpeed:Float = 0.0;
+	public var arrow:FlxSprite;
+	public var tailHold:FlxTiledSprite;
+	public var tailEnd:FlxSprite;
+	public var noteScale:Float;
 
-	var arrow:FlxSprite;
-	var tailHold:FlxTiledSprite;
-	var tailEnd:FlxSprite;
-	var noteScale:Float;
+	var prevNoteSpeed:Float = 0.0;
 
 	public function new(x:Float, y:Float, strumIndex:Int, time:Float, holdTime:Float = 0.0, noteSpeed:Float = 1.0, scale:Float = 1.0)
 	{
 		super(x, y);
 
+		this.strumIndex = strumIndex;
 		this.time = time;
 		this.holdTime = holdTime;
 		this.noteSpeed = noteSpeed;
@@ -117,7 +122,6 @@ class Note extends FlxTypedSpriteGroup<FlxSprite>
 		{
 			tailHold = new FlxTiledSprite(null, NoteStyle.tailHoldGraphics[strumIndex].width, 10);
 			tailHold.loadGraphic(NoteStyle.tailHoldGraphics[strumIndex]);
-			tailHold.y = 10;
 			tailHold.origin.set();
 			tailHold.antialiasing = true;
 			add(tailHold);
@@ -155,12 +159,23 @@ class Note extends FlxTypedSpriteGroup<FlxSprite>
 
 	public function updateNoteHold()
 	{
-		if (prevNoteSpeed != noteSpeed)
+		if (prevNoteSpeed != noteSpeed || holdProgress > 0)
 		{
 			if (tailHold != null)
 			{
-				tailHold.height = (holdTime * (400.0 * noteSpeed));
-				tailEnd.setPosition(tailHold.x, tailHold.y + tailHold.height);
+				if (holdProgress > holdTime)
+					holdProgress = holdTime;
+
+				/* This is where I ran out of variable names */
+				var th:Float = (holdTime * (400.0 * noteSpeed));
+				var tp:Float = (holdProgress * (400.0 * noteSpeed));
+
+				tailHold.height = th - tp;
+				tailHold.y = 10 + arrow.y + tp;
+				tailHold.scrollY = -tp;
+				tailEnd.setPosition(tailHold.x, 10 + arrow.y + th);
+
+				// trace("hp " + holdProgress + " tp " + tp + " normal " + holdTime + " y " + arrow.y);
 			}
 
 			prevNoteSpeed = noteSpeed;
@@ -175,7 +190,8 @@ class StrumLine extends FlxTypedSpriteGroup<FlxTypedSpriteGroup<FlxSprite>>
 
 	var strumLineScale:Float;
 
-	var noteObjects:Array<Note> = [];
+	var strumObjects:Array<FlxSprite> = [];
+	var noteObjects:Array<NoteObject> = [];
 
 	public function new(x:Float, y:Float, scale:Float = 1.0, noteSpeed:Float = 1.0)
 	{
@@ -196,9 +212,9 @@ class StrumLine extends FlxTypedSpriteGroup<FlxTypedSpriteGroup<FlxSprite>>
 			strum.frames = NoteStyle.noteAsset;
 			strum.antialiasing = true;
 
-			strum.animation.addByPrefix("idle", NoteStyle.data.animations.strumIdleAnimPrefix[i], 0);
-			strum.animation.addByPrefix("pressed", NoteStyle.data.animations.strumPressAnimPrefix[i], 0);
-			strum.animation.addByPrefix("hit", NoteStyle.data.animations.strumHitAnimPrefix[i], 0);
+			strum.animation.addByPrefix("idle", NoteStyle.data.animations.strumIdleAnimPrefix[i], 0, false);
+			strum.animation.addByPrefix("pressed", NoteStyle.data.animations.strumPressAnimPrefix[i], 24, false);
+			strum.animation.addByPrefix("hit", NoteStyle.data.animations.strumHitAnimPrefix[i], 24, false);
 			strum.animation.play("idle");
 
 			strum.updateHitbox();
@@ -206,11 +222,15 @@ class StrumLine extends FlxTypedSpriteGroup<FlxTypedSpriteGroup<FlxSprite>>
 			strum.scale.x = NoteStyle.data.globalNoteScale * strumLineScale;
 			strum.scale.y = strum.scale.x;
 			strumPart.add(strum);
+
+			strumObjects.push(strum);
 		}
 	}
 
 	override public function update(elapsed:Float)
 	{
+		super.update(elapsed);
+
 		for (note in noteObjects)
 		{
 			// Calculate note time relative to current song time
@@ -232,16 +252,65 @@ class StrumLine extends FlxTypedSpriteGroup<FlxTypedSpriteGroup<FlxSprite>>
 		}
 	}
 
+	/* Helper function to play animation on a specific strum line sprite */
+	inline public function playStrumAnim(strumIndex:Int, animName:String)
+		strumObjects[strumIndex].animation.play(animName);
+
+	inline public function getCurrentStrumAnim(strumIndex:Int):FlxAnimation
+		return strumObjects[strumIndex].animation.curAnim;
+
 	public function addNote(strumIndex:Int, time:Float, holdTime:Float = 0.0)
 	{
 		if (strumIndex < 4)
 		{
-			var note:Note = new Note(0, 0, strumIndex, time, holdTime, noteSpeed);
+			var note:NoteObject = new NoteObject(0, 0, strumIndex, time, holdTime, noteSpeed);
 			// Hide note to minimize rendering cost
 			note.visible = false;
 			members[strumIndex].add(note);
 			// Store in a separate array for easy access
 			noteObjects.push(note);
+		}
+	}
+
+	public function getNote(strumIndex:Int, time:Float):NoteObject
+	{
+		for (note in noteObjects)
+		{
+			if (note.strumIndex == strumIndex && note.time == time)
+			{
+				return note;
+			}
+		}
+
+		return null;
+	}
+
+	public function invalidateNote(strumIndex:Int, time:Float)
+	{
+		var note:NoteObject = getNote(strumIndex, time);
+
+		if (note != null)
+		{
+			note.alpha = 0.2;
+			if (note.tailHold != null)
+			{
+				var clonedBD:BitmapData = note.tailHold.graphic.bitmap.clone();
+				var clonedFG:FlxGraphic = FlxGraphic.fromBitmapData(clonedBD);
+
+				clonedBD.colorTransform(clonedBD.rect, new ColorTransform(1, 1, 1, 0.2));
+				note.tailHold.graphic = clonedFG;
+			}
+		}
+	}
+
+	public function removeNote(strumIndex:Int, time:Float)
+	{
+		var note:NoteObject = getNote(strumIndex, time);
+		if (note != null)
+		{
+			remove(note, true);
+			noteObjects.remove(note);
+			note.destroy();
 		}
 	}
 }

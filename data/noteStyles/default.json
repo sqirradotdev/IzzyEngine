@@ -9,6 +9,6 @@
 		"tailEndAnimPrefix": ["pruple end hold", "blue hold end", "green hold end", "red hold end"],
 		"strumIdleAnimPrefix": ["arrowLEFT", "arrowDOWN", "arrowUP", "arrowRIGHT"],
 		"strumPressAnimPrefix": ["left press", "down press", "up press", "right press"],
-		"strumHitAnimPrefix": ["left confirm", "down confirm", "up confirm", "right confirm"]
+		"strumHitAnimPrefix": ["left confirm0", "down confirm0", "up confirm0", "right confirm0"]
     }
 }

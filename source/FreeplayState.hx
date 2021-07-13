@@ -167,6 +167,6 @@ class FreeplayState extends MusicBeatState
 	function selectSong()
 	{
 		FlxG.sound.music.stop();
-		FlxG.switchState(new PlayState(SongDatabase.songs[songSelection].songName, null, NORMAL, FREEPLAY));
+		FlxG.switchState(new PlayState(SongDatabase.songs[songSelection].songName, null, HARD, FREEPLAY));
 	}
 }
