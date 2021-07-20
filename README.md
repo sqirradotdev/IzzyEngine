@@ -4,7 +4,7 @@
 
 ![Izzy Engine Logo](img/IzzyEngineLogo.svg)
 
-Friday Night Funkin' Izzy Engine is a complete remake of Friday Night Funkin', aiming for easy custom content creation.
+Izzy Engine is a complete remake of Friday Night Funkin', aiming for easy custom content creation.
 
 As of this writing, this engine is unfinished, it hasn't even hit alpha yet. So, expect missing basic features like gameplay and charter.
 
