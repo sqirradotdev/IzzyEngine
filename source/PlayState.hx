@@ -172,10 +172,10 @@ class PlayState extends MusicBeatState
 		}
 
 		var input:Array<Bool> = [
-			FlxG.keys.pressed.D,
-			FlxG.keys.pressed.F,
-			FlxG.keys.pressed.J,
-			FlxG.keys.pressed.K
+			FlxG.keys.pressed.D || FlxG.keys.pressed.LEFT,
+			FlxG.keys.pressed.F || FlxG.keys.pressed.DOWN,
+			FlxG.keys.pressed.J || FlxG.keys.pressed.UP,
+			FlxG.keys.pressed.K || FlxG.keys.pressed.RIGHT
 		];
 
 		/* Player input handling */
