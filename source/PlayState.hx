@@ -286,35 +286,38 @@ class PlayState extends MusicBeatState
 		var enemyNoteIndex:Int = 0;
 		while (chartData.enemyNotes[enemyNoteIndex] != null && chartData.enemyNotes[enemyNoteIndex].time - Conductor.time < 0)
 		{
-			var strumIndex:Int = chartData.enemyNotes[0].strumIndex;
+			var strumIndex:Int = chartData.enemyNotes[enemyNoteIndex].strumIndex;
 			var noteObject:NoteObject = enemyStrumLine.getNote(strumIndex, chartData.enemyNotes[0].time);
 
-			if (chartData.enemyNotes[0].holdTime == 0.0)
+			if (chartData.enemyNotes[enemyNoteIndex].holdTime == 0.0)
 			{
-				enemyStrumLine.removeNote(strumIndex, chartData.enemyNotes[0].time);
+				enemyStrumLine.removeNote(strumIndex, chartData.enemyNotes[enemyNoteIndex].time);
 				chartData.enemyNotes.remove(chartData.enemyNotes[enemyNoteIndex]);
+
+				enemyStrumLine.playStrumAnim(strumIndex, "hit");
+
+				new FlxTimer().start(0.1, function(_:FlxTimer)
+				{
+					enemyStrumLine.playStrumAnim(strumIndex, "idle");
+				});
 			}
 			else
 			{
-				// trace(enemyStrumLine.getCurrentStrumAnim(strumIndex).name);
-
-				noteObject.arrow.visible = false;
-				noteObject.holdProgress = Conductor.interpTime - noteObject.time;
-				if (noteObject.holdProgress > noteObject.holdTime)
-				{
-					enemyStrumLine.removeNote(strumIndex, chartData.enemyNotes[0].time);
-					chartData.enemyNotes.remove(chartData.enemyNotes[enemyNoteIndex]);
-				}
-			}
-
-			if (enemyStrumLine.getCurrentStrumAnim(strumIndex).name != "hit")
 				enemyStrumLine.playStrumAnim(strumIndex, "hit");
 
-			new FlxTimer().start(0.1, function(_:FlxTimer)
-			{
-				if (enemyStrumLine.getCurrentStrumAnim(strumIndex).name != "idle")
-					enemyStrumLine.playStrumAnim(strumIndex, "idle");
-			});
+				if (noteObject != null)
+				{
+					noteObject.arrow.visible = false;
+					noteObject.holdProgress = Conductor.interpTime - noteObject.time;
+					if (noteObject.holdProgress > noteObject.holdTime)
+					{
+						enemyStrumLine.playStrumAnim(strumIndex, "idle");
+
+						enemyStrumLine.removeNote(strumIndex, chartData.enemyNotes[enemyNoteIndex].time);
+						chartData.enemyNotes.remove(chartData.enemyNotes[enemyNoteIndex]);
+					}
+				}
+			}
 
 			voicesSound.volume = 1.0;
 
