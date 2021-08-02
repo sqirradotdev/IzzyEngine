@@ -32,4 +32,4 @@ after_build:
 
 artifacts:
   - path: IzzyEngine-linux.tar
-  - name: IzzyEngine-linux
+    name: IzzyEngine-linux
