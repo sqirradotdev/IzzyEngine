@@ -159,12 +159,7 @@ class MainMenuState extends MusicBeatState
 				if (options[optionSelection] == "donate")
 				{
 					var url:String = "https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game";
-
-					#if linux
-					Sys.command('/usr/bin/xdg-open', [url, "&"]);
-					#else
-					FlxG.openURL(url);
-					#end
+					Util.openUrl(url);
 				}
 				else
 				{
