@@ -1,5 +1,7 @@
 package;
 
+import flixel.FlxG;
+
 /**
  * Class that holds common functions used throughout the game.
  */
