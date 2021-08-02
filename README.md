@@ -10,12 +10,12 @@ As of this writing, this engine is unfinished, it hasn't even hit alpha yet. So,
 
 # Roadmap
 
-- [x] Un-hardcode characters with json
-- [x] Un-hardcode weeks with json
+- [x] Un-hardcode characters with json ***[Completed]***
+- [x] Un-hardcode weeks with json ***[Completed]***
 - [ ] Un-hardcode stages with hscript
 - [ ] Controls remapping
 - [ ] Charter
-- [x] Gameplay logic (partial)
+- [x] Gameplay logic ***[Partial]***
 - [ ] Song Modchart support with hscript
 - [ ] Customizable UI elements with hscript
 
