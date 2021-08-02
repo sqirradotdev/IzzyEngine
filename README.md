@@ -12,7 +12,7 @@ As of this writing, this engine is unfinished, it hasn't even hit alpha yet. So,
 
 - [x] Un-hardcode characters with json ***[Completed]***
 - [x] Un-hardcode weeks with json ***[Completed]***
-- [ ] Un-hardcode stages with hscript
+- [X] Un-hardcode stages with hscript ***[Partial]***
 - [ ] Controls remapping
 - [ ] Charter
 - [x] Gameplay logic ***[Partial]***
