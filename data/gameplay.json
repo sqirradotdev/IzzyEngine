@@ -1,0 +1,9 @@
+{
+    "noteHoldTolerance": 0.1,
+    "timeWindow": {
+        "sick": 0.04,
+        "good": 0.08,
+        "bad" : 0.12,
+        "shit": 0.16
+    }
+}

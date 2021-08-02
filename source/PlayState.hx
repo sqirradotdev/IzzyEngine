@@ -16,13 +16,39 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import haxe.Json;
 import haxe.macro.Type.AnonType;
 import openfl.utils.Assets;
+import sys.FileSystem;
+import sys.io.File;
 
 enum Mode
 {
 	STORY;
 	FREEPLAY;
+}
+
+@:enum abstract Judgement(String) to String
+{
+	var SICK = "sick";
+	var GOOD = "good";
+	var BAD = "bad";
+	var SHIT = "shit";
+	var MISS = "miss";
+}
+
+typedef GameplayConfig =
+{
+	var noteHoldTolerance:Float;
+	var timeWindow:TimeWindow;
+}
+
+typedef TimeWindow =
+{
+	var sick:Float;
+	var good:Float;
+	var bad:Float;
+	var shit:Float;
 }
 
 class PlayState extends MusicBeatState
@@ -33,6 +59,8 @@ class PlayState extends MusicBeatState
 	var currentDifficulty:Difficulty = NORMAL;
 	var currentMode:Mode = FREEPLAY;
 	var songPaths:Array<String>;
+
+	var gameplayConfig:GameplayConfig;
 
 	var countingDown:Bool = false;
 
@@ -45,9 +73,8 @@ class PlayState extends MusicBeatState
 	var stageCamera:FlxCamera;
 	var uiCamera:FlxCamera;
 
-	var stageCameraFollow:FlxObject;
-
 	var stage:Stage;
+	var stageCameraFollow:FlxObject;
 
 	var enemyStrumLine:StrumLine;
 	var playerStrumLine:StrumLine;
@@ -81,6 +108,7 @@ class PlayState extends MusicBeatState
 		super.create();
 		persistentUpdate = true;
 
+		getGameplayConfig();
 		getChartData();
 
 		/* Cache sounds to prevent hiccups */
@@ -160,9 +188,9 @@ class PlayState extends MusicBeatState
 							/* If a note in an array matches strumIndex with the current input */
 							if (chartData.playerNotes[noteIndex].strumIndex == i)
 							{
-								var timeRel:Float = chartData.playerNotes[noteIndex].time - Conductor.time;
-								/* Only check if it's in a hit window (in this case, 75 ms) */
-								if (timeRel < 0.075)
+								var hitTime:Float = chartData.playerNotes[noteIndex].time - Conductor.time;
+								/* Check if it's in a hit window (the lowest judgement) */
+								if (hitTime < gameplayConfig.timeWindow.shit)
 								{
 									/* If it's not a note hold */
 									if (chartData.playerNotes[noteIndex].holdTime == 0.0)
@@ -181,10 +209,10 @@ class PlayState extends MusicBeatState
 
 									chartData.playerNotes.remove(chartData.playerNotes[noteIndex]);
 
-									hitBehaviour();
+									hitBehaviour(hitTime);
 
-									var msTimeRel:Int = Math.floor(timeRel * 1000);
-									trace("Hit: " + msTimeRel + " ms");
+									var msHitTime:Int = Math.floor(hitTime * 1000);
+									trace("Hit: " + msHitTime + " ms");
 								}
 								/* Break while loop because it found the note it wants */
 								break;
@@ -334,6 +362,30 @@ class PlayState extends MusicBeatState
 		stage.onBeat(Conductor.beat);
 	}
 
+	function getGameplayConfig()
+	{
+		var path:String = "./data/gameplay.json";
+
+		if (FileSystem.exists(path))
+			gameplayConfig = Json.parse(File.getContent(path));
+		else
+		{
+			trace("gameplay.json not found! Creating one.");
+
+			gameplayConfig = {
+				noteHoldTolerance: 0.1,
+				timeWindow: {
+					sick: 0.025,
+					good: 0.05,
+					bad: 0.75,
+					shit: 0.1
+				}
+			}
+
+			File.saveContent(path, Json.stringify(gameplayConfig, "\t"));
+		}
+	}
+
 	/** 
 	 * Prepare the song's chart
 	 */
@@ -378,8 +430,43 @@ class PlayState extends MusicBeatState
 		countingDown = false;
 	}
 
-	function hitBehaviour()
+	function pushJudgement(judgement:Judgement)
 	{
+		switch (judgement)
+		{
+			case SICK:
+				trace("SICK");
+			case GOOD:
+				trace("GOOD");
+			case BAD:
+				trace("BAD");
+			case SHIT:
+				trace("SHIT");
+			case MISS:
+				trace("MISS");
+		}
+	}
+
+	/** 
+	 * Do stuffs when succesfully hitting a note
+	 */
+	function hitBehaviour(hitTime:Float)
+	{
+		hitTime = Math.abs(hitTime);
+		var judgement:Judgement = SHIT;
+
+		/* Process judgements */
+		if (hitTime >= 0.0 && hitTime < gameplayConfig.timeWindow.sick)
+			judgement = SICK;
+		else if (hitTime >= gameplayConfig.timeWindow.sick && hitTime < gameplayConfig.timeWindow.good)
+			judgement = GOOD;
+		else if (hitTime >= gameplayConfig.timeWindow.good && hitTime < gameplayConfig.timeWindow.bad)
+			judgement = BAD;
+		else if (hitTime >= gameplayConfig.timeWindow.bad && hitTime < gameplayConfig.timeWindow.shit)
+			judgement = SHIT;
+
+		pushJudgement(judgement);
+
 		voicesSound.volume = 1.0;
 	}
 
@@ -388,6 +475,8 @@ class PlayState extends MusicBeatState
 	 */
 	function missBehaviour(decreaseHealth:Bool = true)
 	{
+		pushJudgement(MISS);
+
 		voicesSound.volume = 0.0;
 
 		/* Random miss sound from 1 to 3 */
