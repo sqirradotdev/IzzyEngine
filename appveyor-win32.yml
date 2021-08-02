@@ -31,5 +31,5 @@ build_script:
 
 artifacts:
   - path: export/release/windows/bin
-    name: Funkin-IzzyEngine-win32
+    name: IzzyEngine-win32
     type: zip
