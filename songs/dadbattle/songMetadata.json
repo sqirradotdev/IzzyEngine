@@ -2,8 +2,5 @@
 	"stage": "stage",
 	"bpm": 180,
 	"songName": "dadbattle",
-	"characters": [
-		"dad",
-		"bf"
-	]
+	"characters": ["dad", "bf", "gf"]
 }

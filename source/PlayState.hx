@@ -47,13 +47,7 @@ class PlayState extends MusicBeatState
 
 	var stageCameraFollow:FlxObject;
 
-	var bg:FlxSprite;
-	var stageFront:FlxSprite;
-	var stageCurtains:FlxSprite;
-
-	var enemy:FlxSprite;
-	var gf:FlxSprite;
-	var player:FlxSprite;
+	var stage:Stage;
 
 	var enemyStrumLine:StrumLine;
 	var playerStrumLine:StrumLine;
@@ -106,40 +100,8 @@ class PlayState extends MusicBeatState
 
 		FlxG.cameras.add(uiCamera, false);
 
-		bg = new FlxSprite(-600, -200).loadGraphic(AssetHelper.getAsset("stageback.png", IMAGE, "week1"));
-		bg.antialiasing = true;
-		bg.scrollFactor.set(0.9, 0.9);
-		bg.active = false;
-		add(bg);
-
-		stageFront = new FlxSprite(-650, 600).loadGraphic(AssetHelper.getAsset("stagefront.png", IMAGE, "week1"));
-		stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
-		stageFront.updateHitbox();
-		stageFront.antialiasing = true;
-		stageFront.scrollFactor.set(0.9, 0.9);
-		stageFront.active = false;
-		add(stageFront);
-
-		stageCurtains = new FlxSprite(-500, -300).loadGraphic(AssetHelper.getAsset("stagecurtains.png", IMAGE, "week1"));
-		stageCurtains.setGraphicSize(Std.int(stageCurtains.width * 0.9));
-		stageCurtains.updateHitbox();
-		stageCurtains.antialiasing = true;
-		stageCurtains.scrollFactor.set(1.3, 1.3);
-		stageCurtains.active = false;
-		add(stageCurtains);
-
-		gf = new Character(400, 130, "gf");
-		gf.scrollFactor.set(0.95, 0.95);
-		add(gf);
-		gf.animation.play("danceLeft");
-
-		enemy = new Character(100, 100, "dad");
-		add(enemy);
-		enemy.animation.play("idle");
-
-		player = new Character(770, 450, "bf");
-		add(player);
-		player.animation.play("idle");
+		stage = new Stage(currentSong.characters, currentSong.stage);
+		add(stage);
 
 		enemyStrumLine = new StrumLine(70, 50, 1.0, chartData.noteSpeed);
 		enemyStrumLine.camera = uiCamera;
@@ -368,6 +330,8 @@ class PlayState extends MusicBeatState
 				voicesSound.time = FlxG.sound.music.time;
 			}
 		}
+
+		stage.onBeat(Conductor.beat);
 	}
 
 	/** 

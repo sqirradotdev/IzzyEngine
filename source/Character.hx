@@ -1,21 +1,17 @@
 package;
 
-import flixel.FlxG;
 import flixel.FlxSprite;
-import haxe.DynamicAccess;
 import haxe.Json;
 import haxe.ds.StringMap;
-import lime.utils.Assets;
-#if desktop
 import sys.FileSystem;
 import sys.io.File;
-#end
 
 typedef CharacterData =
 {
 	var name:String;
 	var atlasPath:Array<String>;
 	var flipX:Bool;
+	var height:Int;
 	var animations:StringMap<CharacterAnimationData>;
 }
 
@@ -29,29 +25,29 @@ typedef CharacterAnimationData =
 
 class Character extends FlxSprite
 {
+	var character:String;
+	var disableAnimPlaying:Bool = false;
+
 	public function new(x:Int, y:Int, character:String)
 	{
 		super(x, y);
 
-		var path:String = "data/characters/" + character + ".json";
+		this.character = character;
+
 		var characterData:CharacterData;
 
-		#if desktop
+		var path:String = "data/characters/" + character + ".json";
 		if (FileSystem.exists(path))
 			characterData = Json.parse(File.getContent(path));
 		else
 		{
-			trace("Unknown character.");
+			trace("Error: Character doesn't exist");
 			characterData = null;
+			return;
 		}
-		#else
-		characterData = Json.parse(Assets.getText(path));
-		#end
 
 		frames = AssetHelper.getSparrowAtlas(characterData.atlasPath[0], characterData.atlasPath[1]);
 		antialiasing = true;
-
-		trace(characterData.name + " animations:");
 
 		for (animationName in Reflect.fields(characterData.animations))
 		{
@@ -65,10 +61,21 @@ class Character extends FlxSprite
 					animation.addByPrefix(animationName, anim.fromPrefix, anim.fps, anim.loop, characterData.flipX);
 			}
 		}
+
+		// TODO: make all character heights
+		this.y -= characterData.height;
+
+		trace(characterData.name);
 	}
 
 	override public function update(elapsed:Float):Void
 	{
 		super.update(elapsed);
+	}
+
+	public function playAnim(anim:String, force:Bool = false)
+	{
+		if (!disableAnimPlaying)
+			animation.play(anim);
 	}
 }

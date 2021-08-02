@@ -5,6 +5,7 @@
         "default"
     ],
     "flipX": false,
+    "height": 767,
     "animations": {
         "idle": {
             "fromPrefix": "Dad idle dance",

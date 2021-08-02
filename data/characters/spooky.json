@@ -1,0 +1,36 @@
+{
+    "name": "spooky",
+    "atlasPath": [
+        "characters/spooky_kids_assets",
+        "week2"
+    ],
+    "flipX": false,
+    "height": 549,
+    "animations": {
+        "idle": {
+            "fromPrefix": "spooky dance idle",
+            "fps": 24,
+            "loop": false
+        },
+        "singUp": {
+            "fromPrefix": "spooky UP NOTE",
+            "fps": 24,
+            "loop": false
+        },
+        "singLeft": {
+            "fromPrefix": "note sing left",
+            "fps": 24,
+            "loop": false
+        },
+        "singRight": {
+            "fromPrefix": "spooky sing right",
+            "fps": 24,
+            "loop": false
+        },
+        "singDown": {
+            "fromPrefix": "spooky DOWN note",
+            "fps": 24,
+            "loop": false
+        }
+    }
+}

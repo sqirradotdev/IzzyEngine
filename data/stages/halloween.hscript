@@ -1,0 +1,44 @@
+var halloweenBg;
+var lightningBeatTimer = 0;
+
+function _create()
+{
+    halloweenBg = makeSprite(-200, -100);
+    halloweenBg.frames = getSparrowAtlas("halloween_bg", "week2");
+    halloweenBg.animation.addByPrefix("idle", "halloweem bg0");
+    halloweenBg.animation.addByPrefix("lightning", "halloweem bg lightning strike", 24, false);
+    halloweenBg.animation.play("idle");
+    halloweenBg.antialiasing = true;
+    stage.add(halloweenBg);
+
+    addKeyCharacter("gf", 400, 778);
+    addKeyCharacter("enemy", 100, 867);
+    addKeyCharacter("player", 770, 862);
+}
+
+function _onBeat(beat)
+{
+    if (beat > 4)
+    {
+        if (lightningBeatTimer == 0)
+        {
+            var random = Std.random(101);
+            if (random > 90)
+            {
+                trace("Triggered! " + random);
+                playSound("thunder_" + (Std.random(2) + 1) + ".ogg", "week2");
+                halloweenBg.animation.play("lightning", true);
+                lightningBeatTimer = 20;
+            }
+            else
+            {
+                trace("not triggered " + random);
+            }
+        }
+        else
+        {
+            trace("Cooldown " + lightningBeatTimer);
+            lightningBeatTimer -= 1;
+        }
+    }
+}

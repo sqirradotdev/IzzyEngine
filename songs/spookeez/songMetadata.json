@@ -1,9 +1,6 @@
 {
-	"stage": "stage",
+	"stage": "halloween",
 	"bpm": 150,
 	"songName": "spookeez",
-	"characters": [
-		"dad",
-		"bf"
-	]
+	"characters": ["spooky", "bf", "gf"]
 }

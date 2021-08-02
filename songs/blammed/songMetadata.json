@@ -2,8 +2,5 @@
 	"stage": "stage",
 	"bpm": 165,
 	"songName": "blammed",
-	"characters": [
-		"dad",
-		"bf"
-	]
+	"characters": ["dad", "bf", "gf"]
 }

@@ -5,11 +5,12 @@
         "default"
     ],
     "flipX": false,
+    "height": 412,
     "animations": {
         "idle": {
             "fromPrefix": "BF idle dance",
             "fps": 24,
-            "loop": true
+            "loop": false
         },
         "singUp": {
             "fromPrefix": "BF NOTE UP0",
