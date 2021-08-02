@@ -23,7 +23,7 @@ install:
   - haxelib install flixel
   - haxelib run lime setup flixel
   - haxelib run lime setup
-  - cd /home/appveyor/projects/izzyengine
+  - cd /home/appveyor/projects/izzyengine-linux
 
 build_script:
   - haxelib run lime build linux
