@@ -384,7 +384,6 @@ class PlayState extends MusicBeatState
 		trace("Player notes:\n" + chartData.playerNotes);
 
 		Conductor.bpm = currentSong.bpm;
-		Conductor.time = -(60.0 / Conductor.bpm) * 4;
 	}
 
 	/** 
@@ -392,6 +391,8 @@ class PlayState extends MusicBeatState
 	 */
 	function startCountDown()
 	{
+		Conductor.time = -((60.0 / Conductor.bpm) * 5);
+
 		new FlxTimer().start(0.25, function(_:FlxTimer)
 		{
 			countDownTimer = new FlxTimer();
@@ -400,8 +401,6 @@ class PlayState extends MusicBeatState
 			{
 				startSong();
 			});
-
-			onBeat();
 		});
 	}
 
