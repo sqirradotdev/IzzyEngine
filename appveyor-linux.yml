@@ -1,0 +1,35 @@
+version: "{build}"
+image: Ubuntu
+
+environment:
+  global:
+    HAXELIB_ROOT: /home/appveyor/haxelib
+
+only_commits:
+  files:
+    - source/
+
+install:
+  - cd /home/appveyor
+  - sudo add-apt-repository ppa:haxe/releases -y
+  - sudo apt update
+  - sudo apt install haxe neko tar gcc-7 g++-7 gcc-7-multilib g++-7-multilib -y
+  - mkdir $HAXELIB_ROOT && haxelib setup $HAXELIB_ROOT
+  # Install project dependencies
+  - haxelib install hscript
+  - haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
+  - haxelib install lime
+  - haxelib install openfl
+  - haxelib install flixel
+  - haxelib run lime setup flixel
+  - haxelib run lime setup
+
+build_script:
+  - haxelib run lime build linux
+
+after_build:
+  - tar -cvf IzzyEngine-linux.tar -C export/release/linux/bin .
+
+artifacts:
+  - path: IzzyEngine-linux.tar
+  - name: IzzyEngine-linux
