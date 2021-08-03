@@ -165,9 +165,9 @@
        y2="441.63245" />
   </defs>
   <g
-     transform="matrix(1.6153778,0,0,1.6145922,-960.07123,-139.97714)"
+     transform="matrix(1.5001983,0,0,1.4994687,-849.19165,-103.9713)"
      id="g91"
-     style="filter:url(#filter93)">
+     style="mix-blend-mode:normal;filter:url(#filter93)">
     <g
        id="g69">
       <use
@@ -229,7 +229,7 @@
     </g>
   </g>
   <g
-     transform="matrix(1.6153778,0,0,1.6145922,-960.07123,-139.97714)"
+     transform="matrix(1.5001983,0,0,1.4994687,-849.19165,-103.9713)"
      id="g32">
     <g
        id="g26">
@@ -292,7 +292,7 @@
     </g>
   </g>
   <g
-     transform="matrix(1.6153778,0,0,1.6145922,-960.07123,-139.97714)"
+     transform="matrix(1.5001983,0,0,1.4994687,-849.19165,-103.9713)"
      id="g121"
      style="mix-blend-mode:overlay;filter:url(#filter123)">
     <g
