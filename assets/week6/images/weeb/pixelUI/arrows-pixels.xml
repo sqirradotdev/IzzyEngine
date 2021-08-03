@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="arrows-pixels.png">
+	<!-- Static -->
+	<SubTexture name="static_left0000"          x="0"  y="0" width="17" height="17"/>
+	<SubTexture name="static_down0000"          x="17" y="0" width="17" height="17"/>
+	<SubTexture name="static_up0000"            x="34" y="0" width="17" height="17"/>
+	<SubTexture name="static_right0000"         x="51" y="0" width="17" height="17"/>
+	<!-- Static pressed -->
+	<SubTexture name="static_pressed_left0000"  x="0"  y="17" width="17" height="17"/>
+	<SubTexture name="static_pressed_left0001"  x="0"  y="34" width="17" height="17"/>
+	<SubTexture name="static_pressed_down0000"  x="17" y="17" width="17" height="17"/>
+	<SubTexture name="static_pressed_down0001"  x="17" y="34" width="17" height="17"/>
+	<SubTexture name="static_pressed_up0000"    x="34" y="17" width="17" height="17"/>
+	<SubTexture name="static_pressed_up0001"    x="34" y="34" width="17" height="17"/>
+	<SubTexture name="static_pressed_right0000" x="51" y="17" width="17" height="17"/>
+	<SubTexture name="static_pressed_right0001" x="51" y="34" width="17" height="17"/>
+	<!-- Static hit -->
+	<SubTexture name="static_hit_left0000"      x="0"  y="51" width="17" height="17"/>
+	<SubTexture name="static_hit_left0001"      x="0"  y="68" width="17" height="17"/>
+	<SubTexture name="static_hit_down0000"      x="17" y="51" width="17" height="17"/>
+	<SubTexture name="static_hit_down0001"      x="17" y="68" width="17" height="17"/>
+	<SubTexture name="static_hit_up0000"        x="34" y="51" width="17" height="17"/>
+	<SubTexture name="static_hit_up0001"        x="34" y="68" width="17" height="17"/>
+	<SubTexture name="static_hit_right0000"     x="51" y="51" width="17" height="17"/>
+	<SubTexture name="static_hit_right0001"     x="51" y="68" width="17" height="17"/>
+	<!-- Moving -->
+	<SubTexture name="moving_left0000"          x="0"  y="17" width="17" height="17"/>
+	<SubTexture name="moving_down0000"          x="17" y="17" width="17" height="17"/>
+	<SubTexture name="moving_up0000"            x="34" y="17" width="17" height="17"/>
+	<SubTexture name="moving_right0000"         x="51" y="17" width="17" height="17"/>
+	<!-- Tail hold -->
+	<SubTexture name="tailhold_left0000"        x="0"  y="86" width="7"  height="8"/>
+	<SubTexture name="tailhold_down0000"        x="7"  y="86" width="7"  height="8"/>
+	<SubTexture name="tailhold_right0000"       x="14" y="86" width="7"  height="8"/>
+	<SubTexture name="tailhold_up0000"          x="21" y="86" width="7"  height="8"/>
+	<!-- Tail end -->
+	<SubTexture name="tailend_left0000"         x="0"  y="94" width="7"  height="4"/>
+	<SubTexture name="tailend_down0000"         x="7"  y="94" width="7"  height="4"/>
+	<SubTexture name="tailend_right0000"        x="14" y="94" width="7"  height="4"/>
+	<SubTexture name="tailend_up0000"           x="21" y="94" width="7"  height="4"/>
+</TextureAtlas>
