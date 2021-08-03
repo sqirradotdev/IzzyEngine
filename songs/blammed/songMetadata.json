@@ -1,5 +1,6 @@
 {
 	"stage": "stage",
+	"noteStyle": "default",
 	"bpm": 165,
 	"songName": "blammed",
 	"characters": ["dad", "bf", "gf"]

@@ -17,26 +17,26 @@ import sys.io.File;
 typedef NoteStyleData =
 {
 	var name:String;
-	var atlasPath:String;
+	var atlasPath:Array<String>;
 	var globalNoteScale:Float;
-	var animations:NoteStyleAnimationData;
+	var antialiasing:Bool;
+	var animPrefixes:NoteStyleAnimations;
 }
 
-typedef NoteStyleAnimationData =
+typedef NoteStyleAnimations =
 {
-	var arrowAnimPrefix:Array<String>;
-	var tailHoldAnimPrefix:Array<String>;
-	var tailEndAnimPrefix:Array<String>;
-	var strumIdleAnimPrefix:Array<String>;
-	var strumPressAnimPrefix:Array<String>;
-	var strumHitAnimPrefix:Array<String>;
+	var arrow:Array<String>;
+	var tailHold:Array<String>;
+	var tailEnd:Array<String>;
+	var strumIdle:Array<String>;
+	var strumPress:Array<String>;
+	var strumHit:Array<String>;
 }
 
 class NoteStyle
 {
 	// Holds note assets, from arrows, strum lines, and tails.
 	public static var noteAsset:FlxAtlasFrames;
-
 	public static var data:NoteStyleData;
 
 	// Needed for FlxTiledSprite
@@ -44,7 +44,13 @@ class NoteStyle
 
 	public static function loadNoteStyle(file:String = "default", reload:Bool = false)
 	{
-		if (noteAsset == null || reload)
+		if (reload && noteAsset != null)
+		{
+			noteAsset.destroy();
+			noteAsset = null;
+		}
+
+		if (noteAsset == null)
 		{
 			var path:String = "./data/noteStyles/";
 			if (FileSystem.exists(path + file + ".json"))
@@ -54,16 +60,17 @@ class NoteStyle
 
 			data = Json.parse(File.getContent(path));
 
-			var atlasTexture:FlxGraphic = AssetHelper.getAsset(data.atlasPath + ".png", IMAGE);
+			var atlasTexture:FlxGraphic = AssetHelper.getAsset(data.atlasPath[0] + ".png", IMAGE, data.atlasPath[1]);
 			atlasTexture.persist = true;
 			atlasTexture.destroyOnNoUse = false;
-			noteAsset = FlxAtlasFrames.fromSparrow(atlasTexture, File.getContent(AssetHelper.getPath(data.atlasPath + ".xml", IMAGE)));
+			noteAsset = FlxAtlasFrames.fromSparrow(atlasTexture, File.getContent(AssetHelper.getPath(data.atlasPath[0] + ".xml", IMAGE, data.atlasPath[1])));
 
+			/* Pre-scale note holds due to how FlxTiledSprite works */
 			for (frameName in noteAsset.framesHash.keys())
 			{
 				for (i in 0...4)
 				{
-					if (StringTools.startsWith(frameName, NoteStyle.data.animations.tailHoldAnimPrefix[i]))
+					if (StringTools.startsWith(frameName, NoteStyle.data.animPrefixes.tailHold[i]))
 					{
 						var frame:FlxFrame = NoteStyle.noteAsset.framesHash.get(frameName);
 						var graphic:FlxGraphic = FlxGraphic.fromFrame(frame);
@@ -75,7 +82,7 @@ class NoteStyle
 						matrix.scale(data.globalNoteScale, data.globalNoteScale);
 						var newBD:BitmapData = new BitmapData(Std.int(graphic.bitmap.width * data.globalNoteScale),
 							Std.int(graphic.bitmap.height * data.globalNoteScale), true, 0x000000);
-						newBD.draw(graphic.bitmap, matrix, null, null, null, true);
+						newBD.draw(graphic.bitmap, matrix, null, null, null, NoteStyle.data.antialiasing);
 						graphic.bitmap = newBD;
 
 						if (tailHoldGraphics[i] != null)
@@ -123,13 +130,13 @@ class NoteObject extends FlxTypedSpriteGroup<FlxSprite>
 			tailHold = new FlxTiledSprite(null, NoteStyle.tailHoldGraphics[strumIndex].width, 10);
 			tailHold.loadGraphic(NoteStyle.tailHoldGraphics[strumIndex]);
 			tailHold.origin.set();
-			tailHold.antialiasing = true;
+			tailHold.antialiasing = NoteStyle.data.antialiasing;
 			add(tailHold);
 
 			tailEnd = new FlxSprite();
 			tailEnd.frames = NoteStyle.noteAsset;
-			tailEnd.antialiasing = true;
-			tailEnd.animation.addByPrefix("idle", NoteStyle.data.animations.tailEndAnimPrefix[strumIndex], 0, false);
+			tailEnd.antialiasing = NoteStyle.data.antialiasing;
+			tailEnd.animation.addByPrefix("idle", NoteStyle.data.animPrefixes.tailEnd[strumIndex], 0, false);
 			tailEnd.animation.play("idle");
 			tailEnd.origin.set();
 			tailEnd.scale.x = NoteStyle.data.globalNoteScale * noteScale;
@@ -141,8 +148,8 @@ class NoteObject extends FlxTypedSpriteGroup<FlxSprite>
 		// Arrow rendering
 		arrow = new FlxSprite(0, 0);
 		arrow.frames = NoteStyle.noteAsset;
-		arrow.antialiasing = true;
-		arrow.animation.addByPrefix("idle", NoteStyle.data.animations.arrowAnimPrefix[strumIndex], 0, false);
+		arrow.antialiasing = NoteStyle.data.antialiasing;
+		arrow.animation.addByPrefix("idle", NoteStyle.data.animPrefixes.arrow[strumIndex], 0, false);
 		arrow.animation.play("idle");
 		arrow.origin.set();
 		arrow.scale.x = NoteStyle.data.globalNoteScale * noteScale;
@@ -210,11 +217,11 @@ class StrumLine extends FlxTypedSpriteGroup<FlxTypedSpriteGroup<FlxSprite>>
 
 			var strum:FlxSprite = new FlxSprite();
 			strum.frames = NoteStyle.noteAsset;
-			strum.antialiasing = true;
+			strum.antialiasing = NoteStyle.data.antialiasing;
 
-			strum.animation.addByPrefix("idle", NoteStyle.data.animations.strumIdleAnimPrefix[i], 0, false);
-			strum.animation.addByPrefix("pressed", NoteStyle.data.animations.strumPressAnimPrefix[i], 24, false);
-			strum.animation.addByPrefix("hit", NoteStyle.data.animations.strumHitAnimPrefix[i], 24, false);
+			strum.animation.addByPrefix("idle", NoteStyle.data.animPrefixes.strumIdle[i], 0, false);
+			strum.animation.addByPrefix("pressed", NoteStyle.data.animPrefixes.strumPress[i], 24, false);
+			strum.animation.addByPrefix("hit", NoteStyle.data.animPrefixes.strumHit[i], 24, false);
 			strum.animation.play("idle");
 
 			strum.updateHitbox();

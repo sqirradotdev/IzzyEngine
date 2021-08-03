@@ -3,6 +3,7 @@ package;
 import ChartReader.ChartData;
 import ChartReader.NoteData;
 import GameplayUI.NoteObject;
+import GameplayUI.NoteStyle;
 import GameplayUI.StrumLine;
 import SongDatabase.Difficulty;
 import SongDatabase.SongMetadata;
@@ -107,6 +108,8 @@ class PlayState extends MusicBeatState
 	{
 		super.create();
 		persistentUpdate = true;
+
+		NoteStyle.loadNoteStyle(currentSong.noteStyle, true);
 
 		getGameplayConfig();
 		getChartData();

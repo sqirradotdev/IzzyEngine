@@ -1,0 +1,15 @@
+{
+    "name": "pixel",
+    "atlasPath": ["weeb/pixelUI/arrows-pixels", "week6"],
+    "globalNoteScale": 6.0,
+    "antialiasing": false,
+    "animPrefixes":
+    {
+        "arrow": ["moving_left", "moving_down", "moving_up", "moving_right"],
+		"tailHold": ["tailhold_left", "tailhold_down", "tailhold_up", "tailhold_right"],
+		"tailEnd": ["tailend_left", "tailend_down", "tailend_up", "tailend_right"],
+		"strumIdle": ["static_left", "static_down", "static_up", "static_right"],
+		"strumPress": ["static_pressed_left", "static_pressed_down", "static_pressed_up", "static_pressed_right"],
+		"strumHit": ["static_hit_left", "static_hit_down", "static_hit_up", "static_hit_right"]
+    }
+}

@@ -1,9 +1,7 @@
 {
 	"stage": "stage",
+	"noteStyle": "pixel",
 	"bpm": 144,
 	"songName": "senpai",
-	"characters": [
-		"dad",
-		"bf"
-	]
+	"characters": ["dad", "bf", "gf"]
 }

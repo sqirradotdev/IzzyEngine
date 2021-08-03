@@ -29,7 +29,7 @@ typedef SongMetadata =
 	var bpm:Int;
 	var characters:Array<String>;
 	var stage:String;
-	// var chart:Map<Int, TickData>;
+	var noteStyle:String;
 }
 
 class SongDatabase
@@ -77,7 +77,8 @@ class SongDatabase
 			songName: "",
 			bpm: 100,
 			characters: ["dad", "bf"],
-			stage: "stage"
+			stage: "stage",
+			noteStyle: "default"
 		};
 
 		if (FileSystem.exists(path))

@@ -1,5 +1,6 @@
 {
 	"stage": "stage",
+	"noteStyle": "default",
 	"bpm": 150,
 	"songName": "pico",
 	"characters": [

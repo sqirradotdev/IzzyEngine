@@ -1,5 +1,6 @@
 {
 	"stage": "stage",
+	"noteStyle": "default",
 	"bpm": 100,
 	"songName": "tutorial",
 	"characters": [

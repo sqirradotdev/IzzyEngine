@@ -1,9 +1,7 @@
 {
 	"stage": "stage",
+	"noteStyle": "pixel",
 	"bpm": 120,
 	"songName": "roses",
-	"characters": [
-		"dad",
-		"bf"
-	]
+	"characters": ["dad", "bf", "gf"]
 }

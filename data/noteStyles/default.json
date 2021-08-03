@@ -1,14 +1,15 @@
 {
     "name": "default",
-    "atlasPath": "NOTE_assets",
+    "atlasPath": ["gameplay/NOTE_assets", "default"],
     "globalNoteScale": 0.7,
-    "animations":
+    "antialiasing": true,
+    "animPrefixes":
     {
-        "arrowAnimPrefix": ["purple0", "blue0", "green0", "red0"],
-		"tailHoldAnimPrefix": ["purple hold piece", "blue hold piece", "green hold piece", "red hold piece"],
-		"tailEndAnimPrefix": ["pruple end hold", "blue hold end", "green hold end", "red hold end"],
-		"strumIdleAnimPrefix": ["arrowLEFT", "arrowDOWN", "arrowUP", "arrowRIGHT"],
-		"strumPressAnimPrefix": ["left press", "down press", "up press", "right press"],
-		"strumHitAnimPrefix": ["left confirm0", "down confirm0", "up confirm0", "right confirm0"]
+        "arrow": ["purple0", "blue0", "green0", "red0"],
+		"tailHold": ["purple hold piece", "blue hold piece", "green hold piece", "red hold piece"],
+		"tailEnd": ["pruple end hold", "blue hold end", "green hold end", "red hold end"],
+		"strumIdle": ["arrowLEFT", "arrowDOWN", "arrowUP", "arrowRIGHT"],
+		"strumPress": ["left press", "down press", "up press", "right press"],
+		"strumHit": ["left confirm0", "down confirm0", "up confirm0", "right confirm0"]
     }
 }

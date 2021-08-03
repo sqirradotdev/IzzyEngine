@@ -1,5 +1,6 @@
 {
 	"stage": "halloween",
+	"noteStyle": "default",
 	"bpm": 165,
 	"songName": "south",
 	"characters": ["spooky", "bf", "gf"]

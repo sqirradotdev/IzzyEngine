@@ -1,5 +1,6 @@
 {
     "songName": "bopeebo",
+    "noteStyle": "default",
     "bpm": 100,
     "characters": ["dad", "bf", "gf"],
     "stage": "stage"
