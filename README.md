@@ -14,6 +14,7 @@ As of this writing, this engine is unfinished, it hasn't even hit alpha yet. So,
 
 - [x] Un-hardcode characters with json ***[Completed]***
 - [x] Un-hardcode weeks with json ***[Completed]***
+- [x] Un-hardcode note styles with json ***[Completed]***
 - [X] Un-hardcode stages with hscript ***[Partial]***
 - [ ] Controls remapping
 - [ ] Charter
