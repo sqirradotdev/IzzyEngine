@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.display.FlxTiledSprite;
 import flixel.animation.FlxAnimation;
@@ -35,61 +36,45 @@ typedef NoteStyleAnimations =
 
 class NoteStyle
 {
-	// Holds note assets, from arrows, strum lines, and tails.
-	public static var noteAsset:FlxAtlasFrames;
 	public static var data:NoteStyleData;
 
 	// Needed for FlxTiledSprite
 	public static var tailHoldGraphics:Array<FlxGraphic> = [null, null, null, null];
 
-	public static function loadNoteStyle(file:String = "default", reload:Bool = false)
+	public static function loadNoteStyle(file:String = "default")
 	{
-		if (reload && noteAsset != null)
+		var path:String = "./data/noteStyles/";
+		if (FileSystem.exists(path + file + ".json"))
+			path += file + ".json";
+		else
+			path += "default.json";
+
+		data = Json.parse(File.getContent(path));
+
+		var noteAsset:FlxAtlasFrames = AssetHelper.getSparrowAtlas(data.atlasPath[0], data.atlasPath[1]);
+
+		/* Pre-scale note holds due to how FlxTiledSprite works */
+		for (frameName in noteAsset.framesHash.keys())
 		{
-			noteAsset.destroy();
-			noteAsset = null;
-		}
-
-		if (noteAsset == null)
-		{
-			var path:String = "./data/noteStyles/";
-			if (FileSystem.exists(path + file + ".json"))
-				path += file + ".json";
-			else
-				path += "default.json";
-
-			data = Json.parse(File.getContent(path));
-
-			var atlasTexture:FlxGraphic = AssetHelper.getAsset(data.atlasPath[0] + ".png", IMAGE, data.atlasPath[1]);
-			atlasTexture.persist = true;
-			atlasTexture.destroyOnNoUse = false;
-			noteAsset = FlxAtlasFrames.fromSparrow(atlasTexture, File.getContent(AssetHelper.getPath(data.atlasPath[0] + ".xml", IMAGE, data.atlasPath[1])));
-
-			/* Pre-scale note holds due to how FlxTiledSprite works */
-			for (frameName in noteAsset.framesHash.keys())
+			for (i in 0...4)
 			{
-				for (i in 0...4)
+				if (StringTools.startsWith(frameName, NoteStyle.data.animPrefixes.tailHold[i]))
 				{
-					if (StringTools.startsWith(frameName, NoteStyle.data.animPrefixes.tailHold[i]))
-					{
-						var frame:FlxFrame = NoteStyle.noteAsset.framesHash.get(frameName);
-						var graphic:FlxGraphic = FlxGraphic.fromFrame(frame);
-						graphic.persist = true;
-						graphic.destroyOnNoUse = false;
+					var frame:FlxFrame = noteAsset.framesHash.get(frameName);
+					var graphic:FlxGraphic = FlxGraphic.fromFrame(frame);
 
-						// Scale the BitmapData inside the graphic
-						var matrix:Matrix = new Matrix();
-						matrix.scale(data.globalNoteScale, data.globalNoteScale);
-						var newBD:BitmapData = new BitmapData(Std.int(graphic.bitmap.width * data.globalNoteScale),
-							Std.int(graphic.bitmap.height * data.globalNoteScale), true, 0x000000);
-						newBD.draw(graphic.bitmap, matrix, null, null, null, NoteStyle.data.antialiasing);
-						graphic.bitmap = newBD;
+					// Scale the BitmapData inside the graphic
+					var matrix:Matrix = new Matrix();
+					matrix.scale(data.globalNoteScale, data.globalNoteScale);
+					var newBD:BitmapData = new BitmapData(Std.int(graphic.bitmap.width * data.globalNoteScale),
+						Std.int(graphic.bitmap.height * data.globalNoteScale), true, 0x000000);
+					newBD.draw(graphic.bitmap, matrix, null, null, null, NoteStyle.data.antialiasing);
+					graphic.bitmap = newBD;
 
-						if (tailHoldGraphics[i] != null)
-							tailHoldGraphics[i].destroy();
+					if (tailHoldGraphics[i] != null)
+						tailHoldGraphics[i].destroy();
 
-						tailHoldGraphics[i] = graphic;
-					}
+					tailHoldGraphics[i] = graphic;
 				}
 			}
 		}
@@ -121,9 +106,6 @@ class NoteObject extends FlxTypedSpriteGroup<FlxSprite>
 		this.noteSpeed = noteSpeed;
 		this.noteScale = scale;
 
-		// Just in case it's not loaded yet
-		NoteStyle.loadNoteStyle();
-
 		// Tail (note hold) rendering
 		if (holdTime > 0)
 		{
@@ -134,7 +116,7 @@ class NoteObject extends FlxTypedSpriteGroup<FlxSprite>
 			add(tailHold);
 
 			tailEnd = new FlxSprite();
-			tailEnd.frames = NoteStyle.noteAsset;
+			tailEnd.frames = AssetHelper.getSparrowAtlas(NoteStyle.data.atlasPath[0], NoteStyle.data.atlasPath[1]);
 			tailEnd.antialiasing = NoteStyle.data.antialiasing;
 			tailEnd.animation.addByPrefix("idle", NoteStyle.data.animPrefixes.tailEnd[strumIndex], 0, false);
 			tailEnd.animation.play("idle");
@@ -147,7 +129,7 @@ class NoteObject extends FlxTypedSpriteGroup<FlxSprite>
 
 		// Arrow rendering
 		arrow = new FlxSprite(0, 0);
-		arrow.frames = NoteStyle.noteAsset;
+		arrow.frames = AssetHelper.getSparrowAtlas(NoteStyle.data.atlasPath[0], NoteStyle.data.atlasPath[1]);
 		arrow.antialiasing = NoteStyle.data.antialiasing;
 		arrow.animation.addByPrefix("idle", NoteStyle.data.animPrefixes.arrow[strumIndex], 0, false);
 		arrow.animation.play("idle");
@@ -207,16 +189,13 @@ class StrumLine extends FlxTypedSpriteGroup<FlxTypedSpriteGroup<FlxSprite>>
 		this.strumLineScale = scale;
 		this.noteSpeed = noteSpeed;
 
-		// Just in case it's not loaded yet
-		NoteStyle.loadNoteStyle();
-
 		for (i in 0...4)
 		{
 			var strumPart:FlxTypedSpriteGroup<FlxSprite> = new FlxTypedSpriteGroup<FlxSprite>((i * (108 * strumLineScale)), 0);
 			add(strumPart);
 
 			var strum:FlxSprite = new FlxSprite();
-			strum.frames = NoteStyle.noteAsset;
+			strum.frames = AssetHelper.getSparrowAtlas(NoteStyle.data.atlasPath[0], NoteStyle.data.atlasPath[1]);
 			strum.antialiasing = NoteStyle.data.antialiasing;
 
 			strum.animation.addByPrefix("idle", NoteStyle.data.animPrefixes.strumIdle[i], 0, false);

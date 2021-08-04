@@ -109,7 +109,7 @@ class PlayState extends MusicBeatState
 		super.create();
 		persistentUpdate = true;
 
-		NoteStyle.loadNoteStyle(currentSong.noteStyle, true);
+		NoteStyle.loadNoteStyle(currentSong.noteStyle);
 
 		getGameplayConfig();
 		getChartData();
