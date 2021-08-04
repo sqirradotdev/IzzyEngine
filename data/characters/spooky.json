@@ -6,10 +6,18 @@
     ],
     "flipX": false,
     "height": 549,
+    "idleSequence": ["danceLeft", "danceRight"],
     "animations": {
-        "idle": {
+        "danceLeft": {
             "fromPrefix": "spooky dance idle",
-            "fps": 24,
+            "indices": [0, 2, 6],
+            "fps": 12,
+            "loop": false
+        },
+        "danceRight": {
+            "fromPrefix": "spooky dance idle",
+            "indices": [8, 10, 12, 14],
+            "fps": 12,
             "loop": false
         },
         "singUp": {

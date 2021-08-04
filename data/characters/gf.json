@@ -6,6 +6,7 @@
     ],
     "flipX": false,
     "height": 648,
+    "idleSequence": ["danceLeft", "danceRight"],
     "animations": {
         "cheer": {
             "fromPrefix": "GF Cheer",

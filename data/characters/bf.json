@@ -6,6 +6,7 @@
     ],
     "flipX": false,
     "height": 412,
+    "idleSequence": ["idle"],
     "animations": {
         "idle": {
             "fromPrefix": "BF idle dance",

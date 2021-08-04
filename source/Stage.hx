@@ -40,13 +40,9 @@ class Stage extends FlxTypedGroup<FlxBasic>
 
 	public function onBeat(beat:Int)
 	{
-		if ((beat % 2) == 0)
-			gf.playAnim("danceLeft", true);
-		else
-			gf.playAnim("danceRight", true);
-
-		enemy.playAnim("idle", true);
-		player.playAnim("idle", true);
+		gf.playIdle(beat);
+		enemy.playIdle(beat);
+		player.playIdle(beat);
 
 		if (scriptHelper.getVar("_onBeat") != null)
 			scriptHelper.getVar("_onBeat")(beat);
@@ -60,19 +56,19 @@ class Stage extends FlxTypedGroup<FlxBasic>
 				gf = new Character(x, y, characters[2]);
 				gf.scrollFactor.set(scrollX, scrollY);
 				add(gf);
-				gf.animation.play("danceLeft");
+				gf.playIdle(0);
 				scriptHelper.setVar("gf", gf);
 			case "enemy":
 				enemy = new Character(x, y, characters[0]);
 				enemy.scrollFactor.set(scrollX, scrollY);
 				add(enemy);
-				enemy.animation.play("idle");
+				enemy.playIdle(0);
 				scriptHelper.setVar("enemy", enemy);
 			case "player":
 				player = new Character(x, y, characters[1]);
 				player.scrollFactor.set(scrollX, scrollY);
 				add(player);
-				player.animation.play("idle");
+				player.playIdle(0);
 				scriptHelper.setVar("player", player);
 			default:
 				scriptHelper.scriptTrace("Error! Valid key characters are: gf, enemy, player");
