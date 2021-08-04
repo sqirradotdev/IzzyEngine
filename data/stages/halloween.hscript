@@ -25,19 +25,19 @@ function _onBeat(beat)
             var random = Std.random(101);
             if (random > 90)
             {
-                trace("Triggered! " + random);
+                // trace("Triggered! " + random);
                 playSound("thunder_" + (Std.random(2) + 1) + ".ogg", "week2");
                 halloweenBg.animation.play("lightning", true);
                 lightningBeatTimer = 20;
             }
-            else
+            /* else
             {
                 trace("not triggered " + random);
-            }
+            } */
         }
         else
         {
-            trace("Cooldown " + lightningBeatTimer);
+            // trace("Cooldown " + lightningBeatTimer);
             lightningBeatTimer -= 1;
         }
     }

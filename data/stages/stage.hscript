@@ -4,8 +4,6 @@ var stageCurtains;
 
 function _create()
 {
-    trace("whatchu know about rollin down in the deep");
-
     /* Add sprite with function helper */
     bg = makeSprite(-600, -200);
     bg.loadGraphic(getGraphic("stageback.png", "week1"));
@@ -31,9 +29,4 @@ function _create()
     stageCurtains.updateHitbox();
     stageCurtains.scrollFactor.set(1.3, 1.3);
     stage.add(stageCurtains);
-}
-
-function _onBeat(beat)
-{
-    trace("Beat: " + beat);
 }
