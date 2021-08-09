@@ -19,6 +19,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import haxe.Json;
 import haxe.macro.Type.AnonType;
+import openfl.media.Sound;
 import openfl.utils.Assets;
 import sys.FileSystem;
 import sys.io.File;
@@ -61,6 +62,9 @@ class PlayState extends MusicBeatState
 	var currentMode:Mode = FREEPLAY;
 	var songPaths:Array<String>;
 
+	var inst:Sound;
+	var voices:Sound;
+
 	var gameplayConfig:GameplayConfig;
 
 	var countingDown:Bool = false;
@@ -80,7 +84,7 @@ class PlayState extends MusicBeatState
 	var enemyStrumLine:StrumLine;
 	var playerStrumLine:StrumLine;
 
-	var voicesSound:FlxSound;
+	var voicesObject:FlxSound;
 
 	var countDownTimer:FlxTimer;
 
@@ -113,6 +117,7 @@ class PlayState extends MusicBeatState
 
 		getGameplayConfig();
 		getChartData();
+		getSongAudio();
 
 		/* Cache sounds to prevent hiccups */
 		AssetHelper.getAsset("intro3.ogg", SOUND);
@@ -312,7 +317,7 @@ class PlayState extends MusicBeatState
 				}
 			}
 
-			voicesSound.volume = 1.0;
+			voicesObject.volume = 1.0;
 
 			enemyNoteIndex++;
 		}
@@ -352,13 +357,13 @@ class PlayState extends MusicBeatState
 		}
 
 		/* Resync the vocals */
-		if (voicesSound != null)
+		if (voicesObject != null)
 		{
-			var delta:Float = voicesSound.time - FlxG.sound.music.time;
+			var delta:Float = voicesObject.time - FlxG.sound.music.time;
 			if (Math.abs(delta) >= 5)
 			{
 				trace("Delta is " + delta + ", resyncing");
-				voicesSound.time = FlxG.sound.music.time;
+				voicesObject.time = FlxG.sound.music.time;
 			}
 		}
 
@@ -399,10 +404,13 @@ class PlayState extends MusicBeatState
 
 		chartData = ChartReader.readChart(songPaths[0]);
 
-		trace("Enemy notes:\n" + chartData.enemyNotes);
-		trace("Player notes:\n" + chartData.playerNotes);
-
 		Conductor.bpm = currentSong.bpm;
+	}
+
+	function getSongAudio()
+	{
+		inst = Sound.fromFile("./" + songPaths[1]);
+		voices = Sound.fromFile("./" + songPaths[2]);
 	}
 
 	/** 
@@ -428,8 +436,8 @@ class PlayState extends MusicBeatState
 	 */
 	function startSong()
 	{
-		FlxG.sound.playMusic(Assets.cache.getSound(songPaths[1]));
-		voicesSound = FlxG.sound.play(Assets.cache.getSound(songPaths[2]));
+		FlxG.sound.playMusic(inst);
+		voicesObject = FlxG.sound.play(voices);
 		countingDown = false;
 	}
 
@@ -470,7 +478,8 @@ class PlayState extends MusicBeatState
 
 		pushJudgement(judgement);
 
-		voicesSound.volume = 1.0;
+		if (voicesObject != null)
+			voicesObject.volume = 1.0;
 	}
 
 	/** 
@@ -480,7 +489,8 @@ class PlayState extends MusicBeatState
 	{
 		pushJudgement(MISS);
 
-		voicesSound.volume = 0.0;
+		if (voicesObject != null)
+			voicesObject.volume = 0.0;
 
 		/* Random miss sound from 1 to 3 */
 		var random:Int = Std.random(3) + 1;

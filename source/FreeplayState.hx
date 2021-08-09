@@ -3,17 +3,13 @@ package;
 import SongDatabase.Difficulty;
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.effects.FlxFlicker;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import openfl.media.Sound;
-import openfl.utils.Assets;
-#if desktop
-import sys.FileSystem;
-#end
+import sys.thread.Thread;
 
 class FreeplayState extends MusicBeatState
 {
@@ -25,9 +21,10 @@ class FreeplayState extends MusicBeatState
 
 	var lerpedSongSelection:Float = 0;
 
+	var songThread:Thread;
+
 	var bg:FlxSprite;
 	var songItems:FlxSpriteGroup;
-	var musicTween:FlxTween;
 
 	public function new()
 	{
@@ -61,7 +58,7 @@ class FreeplayState extends MusicBeatState
 			// This was on purpose, to give a sense of transition
 			// (shamelessly stolen from osu!)
 			FlxG.sound.music.volume = 0.2;
-			musicTween = FlxTween.tween(FlxG.sound.music, {volume: 1.0}, 1.0);
+			FlxG.sound.music.fadeIn(1.0, 0.2, 1.0);
 		}
 		else
 		{
@@ -154,14 +151,39 @@ class FreeplayState extends MusicBeatState
 	{
 		Conductor.bpm = SongDatabase.songs[songSelection].bpm;
 
-		var songPaths:Array<Dynamic> = SongDatabase.getSongPaths(SongDatabase.songs[songSelection].songName);
-		FlxG.sound.playMusic(Assets.cache.getSound(songPaths[1]));
+		if (songThread == null)
+		{
+			songThread = Thread.create(function()
+			{
+				while (!backed && !songSelected)
+				{
+					var index:Null<Int> = Thread.readMessage(false);
+					if (index != null)
+					{
+						if (index == songSelection)
+						{
+							var songPaths:Array<String> = SongDatabase.getSongPaths(SongDatabase.songs[songSelection].songName);
 
-		if (musicTween != null)
-			musicTween.cancel();
+							var lastSelection:Int = songSelection;
+							var inst:Sound = Sound.fromFile("./" + songPaths[1]);
 
-		FlxG.sound.music.volume = 0.0;
-		musicTween = FlxTween.tween(FlxG.sound.music, {volume: 1.0}, 1.0);
+							if (lastSelection == songSelection && !songSelected)
+							{
+								FlxG.sound.playMusic(inst);
+
+								if (FlxG.sound.music.fadeTween != null)
+									FlxG.sound.music.fadeTween.cancel();
+
+								FlxG.sound.music.volume = 0.0;
+								FlxG.sound.music.fadeIn(1.0, 0.0, 1.0);
+							}
+						}
+					}
+				}
+			});
+		}
+
+		songThread.sendMessage(songSelection);
 	}
 
 	function selectSong()
