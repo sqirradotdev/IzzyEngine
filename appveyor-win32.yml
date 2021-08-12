@@ -21,6 +21,7 @@ install:
   - cd build\msw
   - nmake.exe -f makefile.vc BUILD=release
   - nmake.exe -f makefile.vc BUILD=release SHARED=1
+  - cd C:\projects\izzyengine-win32
   # Install the haxe chocolatey package (https://chocolatey.org/packages/haxe)
   - cinst haxe --version 4.2.2 -y
   - RefreshEnv
