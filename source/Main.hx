@@ -3,10 +3,15 @@ package;
 import flixel.FlxG;
 import flixel.FlxGame;
 import flixel.tweens.FlxTween;
+import haxe.CallStack;
+import haxe.io.Path;
 import lime.app.Application;
 import openfl.Lib;
 import openfl.display.Sprite;
+import openfl.events.UncaughtErrorEvent;
 import sys.FileSystem;
+import sys.io.File;
+import sys.io.Process;
 
 class Main extends Sprite
 {
@@ -16,18 +21,22 @@ class Main extends Sprite
 
 	public static var overlay:Overlay;
 
+	var game:FlxGame;
 	var focusMusicTween:FlxTween;
 
 	public function new()
 	{
 		super();
 
+		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
+
 		// Print game name and information to system console
 		Sys.println(Lib.application.meta["name"] + " v" + Lib.application.meta["version"]);
 
 		RichPresence.startRichPresence();
 
-		addChild(new FlxGame(1280, 720, InitState, 1, normalFps, normalFps, true));
+		game = new FlxGame(1280, 720, InitState, 1, normalFps, normalFps, true);
+		addChild(game);
 
 		overlay = new Overlay(0, 0);
 		addChild(overlay);
@@ -76,5 +85,48 @@ class Main extends Sprite
 
 		// Bring framerate back when focused
 		FlxG.drawFramerate = normalFps;
+	}
+
+	function onCrash(e:UncaughtErrorEvent):Void
+	{
+		var errMsg:String = "";
+		var path:String;
+		var callStack:Array<StackItem> = CallStack.exceptionStack(true);
+		var dateNow:String = Date.now().toString();
+
+		dateNow = StringTools.replace(dateNow, " ", "_");
+		dateNow = StringTools.replace(dateNow, ":", "'");
+
+		path = "./crash/" + "IzzyEngine_" + dateNow + ".txt";
+
+		for (stackItem in callStack)
+		{
+			switch (stackItem)
+			{
+				case FilePos(s, file, line, column):
+					errMsg += "Called from " + file + "::" + line + "\n";
+				default:
+					Sys.println(stackItem);
+			}
+		}
+
+		errMsg += "\nUncaught Error: " + e.error + "\nPlease report this error to the GitHub page: https://github.com/gedehari/IzzyEngine";
+
+		if (!FileSystem.exists("./crash/"))
+			FileSystem.createDirectory("./crash/");
+
+		File.saveContent(path, errMsg + "\n");
+
+		Sys.println(errMsg);
+		Sys.println("Crash dump saved in " + Path.normalize(path));
+
+		#if windows
+		new Process("IzzyEngine-CrashDialog.exe", [path]);
+		#elseif linux
+		new Process("./IzzyEngine-CrashDialog", [path]);
+		#end
+
+		RichPresence.shutdownRichPresence();
+		Sys.exit(1);
 	}
 }

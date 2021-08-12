@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project>
+<project xmlns="http://lime.software/project/1.0.3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://lime.software/project/1.0.3 http://lime.software/xsd/project-1.0.3.xsd">
 	<!-- _________________________ Application Settings _________________________ -->
 
 	<app title="Friday Night Funkin' Izzy Engine" file="IzzyEngine" main="Main" version="0.0.1" company="gedehari" />
@@ -17,7 +17,7 @@
 
 	<set name="BUILD_DIR" value="export/debug" if="debug" />
 	<set name="BUILD_DIR" value="export/release" unless="debug" />
-	<classpath name="source" />
+	<source path="source" />
 	
 	<assets path="assets/default" /> <!-- Embed the default group because it's important -->
 	<assets path="assets" type="template" />
@@ -52,9 +52,18 @@
 	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN" />
 	<haxedef name="FLX_NO_DEBUG" unless="debug" />
 
+	<!-- Akways enable Null Object Reference check for crash dialog -->
+	<haxedef name="HXCPP_CHECK_POINTER" if="release" />
+	<haxedef name="HXCPP_STACK_LINE" if="release" />
+
 	<haxedef name="hscriptPos" />
 
 	<!-- _________________________________ Custom _______________________________ -->
 
-	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
+	<!-- Build external crash reporter with platform-dependent batch script -->
+	<section unless="debug">
+		<postbuild cmd="build-crash-dialog.bat" if="windows" />
+		<postbuild cmd="./build-crash-dialog.sh" if="linux" />
+	</section>
+
 </project>
