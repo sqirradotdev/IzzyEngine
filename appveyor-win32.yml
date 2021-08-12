@@ -13,7 +13,7 @@ install:
   # http://help.appveyor.com/discussions/problems/5616-not-able-to-build-due-to-problem-in-chocolateyinstallps1
   - ps: Set-Service wuauserv -StartupType Manual
   # Install and configure wxWidgets
-  - ps: Invoke-WebRequest -Uri "https://github.com/wxWidgets/wxWidgets/releases/download/v3.1.5/wxWidgets-3.1.5.zip" -OutFile "%WKWIN%\wxWidgets-3.1.5.zip"
+  - ps: Invoke-WebRequest -Uri "https://github.com/wxWidgets/wxWidgets/releases/download/v3.1.5/wxWidgets-3.1.5.zip" -OutFile "%WXWIN%\wxWidgets-3.1.5.zip"
   - cd %WXWIN%
   - compact /u wxWidgets-3.1.5.zip /i /Q
   - dir
