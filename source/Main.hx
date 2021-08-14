@@ -104,7 +104,7 @@ class Main extends Sprite
 			switch (stackItem)
 			{
 				case FilePos(s, file, line, column):
-					errMsg += "Called from " + file + "::" + line + "\n";
+					errMsg += file + " (line " + line + ")\n";
 				default:
 					Sys.println(stackItem);
 			}
@@ -120,11 +120,27 @@ class Main extends Sprite
 		Sys.println(errMsg);
 		Sys.println("Crash dump saved in " + Path.normalize(path));
 
+		var crashDialoguePath:String = "IzzyEngine-CrashDialog";
+
 		#if windows
-		new Process("IzzyEngine-CrashDialog.exe", [path]);
-		#elseif linux
-		new Process("./IzzyEngine-CrashDialog", [path]);
+		crashDialoguePath += ".exe";
 		#end
+
+		if (FileSystem.exists("./" + crashDialoguePath))
+		{
+			Sys.println("Found crash dialog: " + crashDialoguePath);
+
+			#if linux
+			crashDialoguePath = "./" + crashDialoguePath;
+			#end
+			new Process(crashDialoguePath, [path]);
+		}
+		else
+		{
+			// I had to do this or the stupid CI won't build :distress:
+			Sys.println("No crash dialog found! Making a simple alert instead...");
+			Application.current.window.alert(errMsg, "Error!");
+		}
 
 		RichPresence.shutdownRichPresence();
 		Sys.exit(1);

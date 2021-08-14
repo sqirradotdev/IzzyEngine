@@ -61,9 +61,11 @@
 	<!-- _________________________________ Custom _______________________________ -->
 
 	<!-- Build external crash reporter with platform-dependent batch script -->
-	<section unless="debug">
-		<postbuild cmd="build-crash-dialog.bat" if="windows" />
-		<postbuild cmd="./build-crash-dialog.sh" if="linux" />
+	<section if="BUILD_CRASH_DIALOG">
+		<section if="release">
+			<postbuild cmd="build-crash-dialog.bat" if="windows" />
+			<postbuild cmd="./build-crash-dialog.sh" if="linux" />
+		</section>
 	</section>
 
 </project>
