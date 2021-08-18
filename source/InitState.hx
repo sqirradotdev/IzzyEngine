@@ -74,9 +74,6 @@ class InitState extends FlxState
 
 	function startGame()
 	{
-		new FlxTimer().start(0.7, function(_:FlxTimer)
-		{
-			FlxG.switchState(new TitleState());
-		});
+		FlxG.switchState(new TitleState());
 	}
 }
