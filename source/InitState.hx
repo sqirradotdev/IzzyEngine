@@ -21,12 +21,7 @@ class InitState extends FlxState
 	var splash:FlxSprite;
 	var text:FlxText;
 
-	var threadPool:ThreadPool;
-
 	var framePostDraw:Bool = false;
-	var checked:Bool = false;
-	var loaded:Int = 0;
-	var progressInPercent:Float = 0;
 
 	override public function create():Void
 	{
@@ -52,7 +47,7 @@ class InitState extends FlxState
 	{
 		super.update(elapsed);
 
-		if (framePostDraw && !checked)
+		if (framePostDraw)
 		{
 			if (SongDatabase.updateWeekList())
 			{
@@ -72,7 +67,6 @@ class InitState extends FlxState
 			{
 				text.text = "Uh oh! weeks.json is missing or corrupt.\nPlease check the 'data' folder.\nIf in doubt, re-extract the zip archive of this game.\n";
 			}
-			checked = true;
 		}
 		else
 			framePostDraw = true;
