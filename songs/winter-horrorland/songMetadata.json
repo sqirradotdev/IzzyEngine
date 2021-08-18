@@ -3,8 +3,5 @@
 	"noteStyle": "default",
 	"bpm": 159,
 	"songName": "winter-horrorland",
-	"characters": [
-		"dad",
-		"bf"
-	]
+	"characters": ["dad", "bf", "gf"]
 }

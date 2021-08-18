@@ -3,8 +3,5 @@
 	"noteStyle": "default",
 	"bpm": 150,
 	"songName": "pico",
-	"characters": [
-		"dad",
-		"bf"
-	]
+	"characters": ["dad", "bf", "gf"]
 }

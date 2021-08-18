@@ -3,8 +3,5 @@
 	"noteStyle": "default",
 	"bpm": 175,
 	"songName": "philly-nice",
-	"characters": [
-		"dad",
-		"bf"
-	]
+	"characters": ["dad", "bf", "gf"]
 }
