@@ -12,6 +12,7 @@ import hscript.Interp;
 import hscript.Parser;
 import sys.FileSystem;
 import sys.io.File;
+import sys.thread.Thread;
 
 class ScriptHelper
 {
@@ -34,6 +35,7 @@ class ScriptHelper
 		interp.variables.set("getGraphic", getGraphic);
 		interp.variables.set("getSparrowAtlas", AssetHelper.getSparrowAtlas);
 		interp.variables.set("playSound", playSound);
+		interp.variables.set("lazyPlaySound", lazyPlaySound);
 	}
 
 	public inline function getVar(name:String):Dynamic
@@ -82,6 +84,14 @@ class ScriptHelper
 	function playSound(path:String, group:String = "default"):FlxSound
 	{
 		return FlxG.sound.play(AssetHelper.getAsset(path, SOUND, group));
+	}
+
+	function lazyPlaySound(path:String, group:String = "default")
+	{
+		Thread.create(function()
+		{
+			FlxG.sound.play(AssetHelper.getAsset(path, SOUND, group));
+		});
 	}
 
 	function createTimer():FlxTimer

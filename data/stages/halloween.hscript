@@ -26,7 +26,7 @@ function _onBeat(beat)
             if (random > 90)
             {
                 // trace("Triggered! " + random);
-                playSound("thunder_" + (Std.random(2) + 1) + ".ogg", "week2");
+                lazyPlaySound("thunder_" + (Std.random(2) + 1) + ".ogg", "week2");
                 halloweenBg.animation.play("lightning", true);
                 lightningBeatTimer = 20;
             }
