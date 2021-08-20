@@ -1,13 +1,14 @@
 package;
 
-import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.display.FlxTiledSprite;
 import flixel.animation.FlxAnimation;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFrame;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+import flixel.math.FlxPoint;
 import haxe.Json;
 import openfl.display.BitmapData;
 import openfl.geom.ColorTransform;
@@ -36,6 +37,8 @@ typedef NoteStyleAnimations =
 
 class NoteStyle
 {
+	// Holds note assets, from arrows, strum lines, and tails.
+	public static var noteAsset:FlxAtlasFrames;
 	public static var data:NoteStyleData;
 
 	// Needed for FlxTiledSprite
@@ -51,7 +54,7 @@ class NoteStyle
 
 		data = Json.parse(File.getContent(path));
 
-		var noteAsset:FlxAtlasFrames = AssetHelper.getSparrowAtlas(data.atlasPath[0], data.atlasPath[1]);
+		noteAsset = AssetHelper.getSparrowAtlas(data.atlasPath[0], data.atlasPath[1]);
 
 		/* Pre-scale note holds due to how FlxTiledSprite works */
 		for (frameName in noteAsset.framesHash.keys())
@@ -172,28 +175,32 @@ class NoteObject extends FlxTypedSpriteGroup<FlxSprite>
 	}
 }
 
-class StrumLine extends FlxTypedSpriteGroup<FlxTypedSpriteGroup<FlxSprite>>
+class StrumLine extends FlxTypedGroup<FlxSprite>
 {
+	// Position and scaling
+	public var position:FlxPoint = new FlxPoint();
+	var prevPosition:FlxPoint = new FlxPoint();
+
+	public var strumSpacing:Float = 108;
+	var prevStrumSpacing:Float = 0;
+	
 	public var noteSpeed:Float;
 	public var time:Float;
-
-	var strumLineScale:Float;
 
 	var strumObjects:Array<FlxSprite> = [];
 	var noteObjects:Array<NoteObject> = [];
 
 	public function new(x:Float, y:Float, scale:Float = 1.0, noteSpeed:Float = 1.0)
 	{
-		super(x, y);
+		super();
 
-		this.strumLineScale = scale;
 		this.noteSpeed = noteSpeed;
+
+		position.x = x;
+		position.y = y;
 
 		for (i in 0...4)
 		{
-			var strumPart:FlxTypedSpriteGroup<FlxSprite> = new FlxTypedSpriteGroup<FlxSprite>((i * (108 * strumLineScale)), 0);
-			add(strumPart);
-
 			var strum:FlxSprite = new FlxSprite();
 			strum.frames = AssetHelper.getSparrowAtlas(NoteStyle.data.atlasPath[0], NoteStyle.data.atlasPath[1]);
 			strum.antialiasing = NoteStyle.data.antialiasing;
@@ -203,11 +210,11 @@ class StrumLine extends FlxTypedSpriteGroup<FlxTypedSpriteGroup<FlxSprite>>
 			strum.animation.addByPrefix("hit", NoteStyle.data.animPrefixes.strumHit[i], 24, false);
 			strum.animation.play("idle");
 
+			strum.scale.x = NoteStyle.data.globalNoteScale;
+			strum.scale.y = NoteStyle.data.globalNoteScale;
+
 			strum.updateHitbox();
-			strum.origin.set();
-			strum.scale.x = NoteStyle.data.globalNoteScale * strumLineScale;
-			strum.scale.y = strum.scale.x;
-			strumPart.add(strum);
+			add(strum);
 
 			strumObjects.push(strum);
 		}
@@ -217,23 +224,47 @@ class StrumLine extends FlxTypedSpriteGroup<FlxTypedSpriteGroup<FlxSprite>>
 	{
 		super.update(elapsed);
 
+		// Update position and scaling of strum line
+		if (prevStrumSpacing != strumSpacing || prevPosition.x != position.x || prevPosition.y != position.y)
+		{
+			for (i in 0...strumObjects.length)
+			{
+				var strum:FlxSprite = strumObjects[i];
+
+				strum.x = position.x + (i * (strumSpacing));
+				strum.y = position.y;
+			}
+			var totalWidth:Float = (strumObjects[strumObjects.length - 1].x - position.x) + (strumSpacing / 2);
+			for (strum in strumObjects)
+				strum.x -= totalWidth / 2;
+
+			prevStrumSpacing = strumSpacing;
+			prevPosition.x = position.x;
+			prevPosition.y = position.y;
+		}
+
+		// Update note position
 		for (note in noteObjects)
 		{
 			// Calculate note time relative to current song time
 			var timeRel:Float = note.time - time;
 
-			// Used for note hold rendering
-			note.noteSpeed = noteSpeed;
-			note.updateNoteHold();
-
-			// Update note position
-			note.y = (timeRel * (400.0 * noteSpeed)) + y;
-
-			// Unhide note when it's on the screen
-			if (!note.visible)
+			if (timeRel < 3.0)
 			{
-				if (note.y < 720)
+				// Used for note hold rendering
+				note.noteSpeed = noteSpeed;
+				note.updateNoteHold();
+
+				// Update note position
+				note.x = strumObjects[note.strumIndex].x;
+				note.y = strumObjects[note.strumIndex].y + (timeRel * (400.0 * noteSpeed));
+
+				if (!note.visible)
 					note.visible = true;
+			}
+			else
+			{
+				break;
 			}
 		}
 	}
@@ -252,7 +283,7 @@ class StrumLine extends FlxTypedSpriteGroup<FlxTypedSpriteGroup<FlxSprite>>
 			var note:NoteObject = new NoteObject(0, 0, strumIndex, time, holdTime, noteSpeed);
 			// Hide note to minimize rendering cost
 			note.visible = false;
-			members[strumIndex].add(note);
+			add(note);
 			// Store in a separate array for easy access
 			noteObjects.push(note);
 		}

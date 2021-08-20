@@ -139,12 +139,14 @@ class PlayState extends MusicBeatState
 		stage = new Stage(currentSong.characters, currentSong.stage);
 		add(stage);
 
-		enemyStrumLine = new StrumLine(70, 50, 1.0, chartData.noteSpeed);
+		enemyStrumLine = new StrumLine(265, 50, 1.0, chartData.noteSpeed);
 		enemyStrumLine.camera = uiCamera;
+		enemyStrumLine.time = -50;
 		add(enemyStrumLine);
 
-		playerStrumLine = new StrumLine(750, 50, 1.0, chartData.noteSpeed);
+		playerStrumLine = new StrumLine(950, 50, 1.0, chartData.noteSpeed);
 		playerStrumLine.camera = uiCamera;
+		playerStrumLine.time = -50;
 		add(playerStrumLine);
 
 		for (noteData in chartData.enemyNotes)
