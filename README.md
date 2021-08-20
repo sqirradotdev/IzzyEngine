@@ -6,29 +6,30 @@
 
 ![Izzy Engine Logo](img/IzzyEngineLogo.svg)
 
-Izzy Engine is a complete remake of Friday Night Funkin', aiming for easy custom content creation.
+Izzy Engine is a complete recreation of Friday Night Funkin'. Think of it as [opsu!](https://github.com/itdelatrisu/opsu) but for Friday Night Funkin', with great customizability in mind.
 
-As of this writing, this engine is unfinished, it hasn't even hit alpha yet. So, expect missing basic features like gameplay and charter.
+My goal is to make a framework that is accesible, easy to use, and close to the original as possible, with a sprinkle of fixes and quality of life features.
 
-# Roadmap
+## Features Planned and Implemented
 
-- [x] Un-hardcode characters with json ***[Completed]***
-- [x] Un-hardcode weeks with json ***[Completed]***
-- [x] Un-hardcode note styles with json ***[Completed]***
-- [X] Un-hardcode stages with hscript ***[Partial]***
+- [x] Un-hardcode characters with .json **[Completed]**
+- [x] Un-hardcode weeks with .json **[Completed]**
+- [x] Un-hardcode note styles with .json **[Completed]**
+- [X] Un-hardcode stages with .hscript **[Partial]**
+- [x] Gameplay logic **[Partial]**
+- [x] Event system **[Partial]**
 - [ ] Controls remapping
 - [ ] Charter
-- [x] Gameplay logic ***[Partial]***
-- [ ] Song Modchart support with hscript
-- [ ] Customizable UI elements with hscript
+- [ ] Song Modchart support with .hscript
+- [ ] Customizable UI elements with .hscript
 
 More goals will be added as we go.
 
-# License
+## License
 
-This mod is distributed under the Apache License. See `LICENSE` for more information.
+This framework is distributed under the Apache License. See `LICENSE` for more information.
 
-# Credits
+## Credits
 
 ### Friday Night Funkin'
 
