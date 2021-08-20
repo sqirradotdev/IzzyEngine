@@ -1,42 +1,42 @@
 {
-    "name": "dad",
+    "name": "mom-car",
     "atlasPath": [
-        "characters/DADDY_DEAREST",
-        "default"
+        "characters/momCar",
+        "week4"
     ],
     "flipX": false,
-    "height": 767,
-    "cameraOffset": [150.0, -100.0],
+    "height": 814,
+    "cameraOffset": [150.0, 0.0],
     "idleSequence": ["idle"],
     "animations": {
         "idle": {
-            "fromPrefix": "Dad idle dance",
+            "fromPrefix": "Mom Idle",
             "fps": 24,
             "loop": false
         },
         "singUp": {
-            "fromPrefix": "Dad Sing Note UP",
+            "fromPrefix": "Mom Up Pose",
             "fps": 24,
             "loop": false,
-            "offset": [6.0, -50.0]
+            "offset": [-14.0, -71.0]
         },
         "singLeft": {
-            "fromPrefix": "Dad Sing Note LEFT",
+            "fromPrefix": "Mom Left Pose",
             "fps": 24,
             "loop": false,
-            "offset": [10.0, -10.0]
+            "offset": [-250.0, 23.0]
         },
         "singRight": {
-            "fromPrefix": "Dad Sing Note RIGHT",
+            "fromPrefix": "Mom Pose Left",
             "fps": 24,
             "loop": false,
-            "offset": [0.0, -27.0]
+            "offset": [-10.0, 60.0]
         },
         "singDown": {
-            "fromPrefix": "Dad Sing Note DOWN",
+            "fromPrefix": "MOM DOWN POSE",
             "fps": 24,
             "loop": false,
-            "offset": [0.0, 30.0]
+            "offset": [-20.0, 160.0]
         }
     }
 }

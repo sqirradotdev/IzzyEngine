@@ -6,6 +6,7 @@
     ],
     "flipX": false,
     "height": 549,
+    "cameraOffset": [0.0, 0.0],
     "idleSequence": ["danceLeft", "danceRight"],
     "animations": {
         "danceLeft": {
@@ -23,22 +24,26 @@
         "singUp": {
             "fromPrefix": "spooky UP NOTE",
             "fps": 24,
-            "loop": false
+            "loop": false,
+            "offset": [20.0, -26.0]
         },
         "singLeft": {
             "fromPrefix": "note sing left",
             "fps": 24,
-            "loop": false
+            "loop": false,
+            "offset": [-130.0, 10.0]
         },
         "singRight": {
             "fromPrefix": "spooky sing right",
             "fps": 24,
-            "loop": false
+            "loop": false,
+            "offset": [130.0, 14.0]
         },
         "singDown": {
             "fromPrefix": "spooky DOWN note",
             "fps": 24,
-            "loop": false
+            "loop": false,
+            "offset": [50.0, 130.0]
         }
     }
 }

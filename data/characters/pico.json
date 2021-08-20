@@ -1,42 +1,42 @@
 {
-    "name": "dad",
+    "name": "pico",
     "atlasPath": [
-        "characters/DADDY_DEAREST",
-        "default"
+        "characters/Pico_FNF_assetss",
+        "week3"
     ],
-    "flipX": false,
-    "height": 767,
+    "flipX": true,
+    "height": 475,
     "cameraOffset": [150.0, -100.0],
     "idleSequence": ["idle"],
     "animations": {
         "idle": {
-            "fromPrefix": "Dad idle dance",
+            "fromPrefix": "Pico Idle Dance",
             "fps": 24,
             "loop": false
         },
         "singUp": {
-            "fromPrefix": "Dad Sing Note UP",
+            "fromPrefix": "pico Up note0",
             "fps": 24,
             "loop": false,
-            "offset": [6.0, -50.0]
+            "offset": [-29.0, -27.0]
         },
         "singLeft": {
-            "fromPrefix": "Dad Sing Note LEFT",
+            "fromPrefix": "Pico Note Right0",
             "fps": 24,
             "loop": false,
-            "offset": [10.0, -10.0]
+            "offset": [65.0, -9.0]
         },
         "singRight": {
-            "fromPrefix": "Dad Sing Note RIGHT",
+            "fromPrefix": "Pico NOTE LEFT0",
             "fps": 24,
             "loop": false,
-            "offset": [0.0, -27.0]
+            "offset": [-68.0, 7.0]
         },
         "singDown": {
-            "fromPrefix": "Dad Sing Note DOWN",
+            "fromPrefix": "Pico Down Note0",
             "fps": 24,
             "loop": false,
-            "offset": [0.0, 30.0]
+            "offset": [200.0, 70.0]
         }
     }
 }

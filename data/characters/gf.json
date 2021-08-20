@@ -6,6 +6,7 @@
     ],
     "flipX": false,
     "height": 648,
+    "cameraOffset": [0.0, 0.0],
     "idleSequence": ["danceLeft", "danceRight"],
     "animations": {
         "cheer": {

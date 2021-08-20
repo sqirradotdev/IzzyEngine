@@ -4,6 +4,8 @@ var stageCurtains;
 
 function _create()
 {
+    stageCamera.zoom = 0.9;
+    
     /* Add sprite with function helper */
     bg = makeSprite(-600, -200);
     bg.loadGraphic(getGraphic("stageback.png", "week1"));

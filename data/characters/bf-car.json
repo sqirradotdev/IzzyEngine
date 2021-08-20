@@ -1,12 +1,12 @@
 {
-    "name": "bf",
+    "name": "bf-car",
     "atlasPath": [
-        "characters/BOYFRIEND",
-        "default"
+        "characters/bfCar",
+        "week4"
     ],
     "flipX": false,
     "height": 412,
-    "cameraOffset": [-100.0, -100.0],
+    "cameraOffset": [-300.0, -100.0],
     "idleSequence": ["idle"],
     "animations": {
         "idle": {

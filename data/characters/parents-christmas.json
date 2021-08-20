@@ -1,0 +1,66 @@
+{
+    "name": "parents-christmas",
+    "atlasPath": [
+        "characters/mom_dad_christmas_assets",
+        "week5"
+    ],
+    "flipX": false,
+    "height": 782,
+    "cameraOffset": [150.0, -100.0],
+    "idleSequence": ["idle"],
+    "animations": {
+        "idle": {
+            "fromPrefix": "Parent Christmas Idle",
+            "fps": 24,
+            "loop": false
+        },
+        "singUp": {
+            "fromPrefix": "Parent Up Note Dad",
+            "fps": 24,
+            "loop": false,
+            "offset": [47.0, -24.0]
+        },
+        "singLeft": {
+            "fromPrefix": "Parent Left Note Dad",
+            "fps": 24,
+            "loop": false,
+            "offset": [30.0, -16.0]
+        },
+        "singRight": {
+            "fromPrefix": "Parent Right Note Dad",
+            "fps": 24,
+            "loop": false,
+            "offset": [1.0, 23.0]
+        },
+        "singDown": {
+            "fromPrefix": "Parent Down Note Dad",
+            "fps": 24,
+            "loop": false,
+            "offset": [31.0, 29.0]
+        },
+        "singUp-alt": {
+            "fromPrefix": "Parent Up Note Mom",
+            "fps": 24,
+            "loop": false,
+            "offset": [47.0, -24.0]
+        },
+        "singLeft-alt": {
+            "fromPrefix": "Parent Left Note Mom",
+            "fps": 24,
+            "loop": false,
+            "offset": [30.0, -15.0]
+        },
+        "singRight-alt": {
+            "fromPrefix": "Parent Right Note Mom",
+            "fps": 24,
+            "loop": false,
+            "offset": [1.0, -24.0]
+        },
+        "singDown-alt": {
+            "fromPrefix": "Parent Down Note Mom",
+            "fps": 24,
+            "loop": false,
+            "offset": [30.0, 27.0]
+        }
+    }
+}

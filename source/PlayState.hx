@@ -206,6 +206,7 @@ class PlayState extends MusicBeatState
 									if (chartData.playerNotes[noteIndex].holdTime == 0.0)
 									{
 										playerStrumLine.removeNote(i, chartData.playerNotes[noteIndex].time);
+										stage.player.playSingAnim(i);
 									}
 									/* It's a note hold */
 									else
@@ -255,6 +256,7 @@ class PlayState extends MusicBeatState
 			trace("Miss note time " + chartData.playerNotes[0].time);
 
 			playerStrumLine.invalidateNote(chartData.playerNotes[0].strumIndex, chartData.playerNotes[0].time);
+			stage.player.playMissAnim(chartData.playerNotes[0].strumIndex);
 			chartData.playerNotes.shift();
 			missBehaviour();
 		}
@@ -265,12 +267,15 @@ class PlayState extends MusicBeatState
 			var holdProgress:Float = Conductor.time - note.time;
 			var noteObject:NoteObject = playerStrumLine.getNote(note.strumIndex, note.time);
 
+			stage.player.playSingAnim(noteObject.strumIndex, "", false);
+
 			noteObject.holdProgress = Conductor.interpTime - note.time;
 
 			if (!input[note.strumIndex])
 			{
 				playerStrumLine.invalidateNote(note.strumIndex, note.time);
 				currentPlayerNoteHold.remove(note);
+				stage.player.playMissAnim(note.strumIndex);
 				missBehaviour(false);
 			}
 			if (holdProgress > note.holdTime)
@@ -295,6 +300,7 @@ class PlayState extends MusicBeatState
 				chartData.enemyNotes.remove(chartData.enemyNotes[enemyNoteIndex]);
 
 				enemyStrumLine.playStrumAnim(strumIndex, "hit");
+				stage.enemy.playSingAnim(strumIndex);
 
 				new FlxTimer().start(0.1, function(_:FlxTimer)
 				{
@@ -304,6 +310,7 @@ class PlayState extends MusicBeatState
 			else
 			{
 				enemyStrumLine.playStrumAnim(strumIndex, "hit");
+				stage.enemy.playSingAnim(strumIndex, "", false);
 
 				if (noteObject != null)
 				{
