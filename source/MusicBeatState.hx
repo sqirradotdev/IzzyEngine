@@ -18,11 +18,13 @@ class MusicBeatState extends FlxUIState
 
 		conductor = new Conductor();
 		conductor.onBeat = this.onBeat;
+		conductor.onTick = this.onTick;
 		add(conductor);
 
 		FlxG.watch.add(Conductor, "time");
 		FlxG.watch.add(Conductor, "interpTime");
 		FlxG.watch.add(Conductor, "beat");
+		FlxG.watch.add(Conductor, "tick");
 	}
 
 	override public function update(elapsed:Float)
@@ -30,5 +32,6 @@ class MusicBeatState extends FlxUIState
 		super.update(elapsed);
 	}
 
-	public function onBeat():Void {}
+	public function onBeat(beat:Int):Void {}
+	public function onTick(tick:Int):Void {}
 }

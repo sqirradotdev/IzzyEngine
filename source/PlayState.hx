@@ -341,11 +341,11 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	override function onBeat():Void
+	override function onBeat(beat:Int):Void
 	{
 		if (countingDown)
 		{
-			switch (Conductor.beat)
+			switch (beat)
 			{
 				case -4:
 					FlxG.sound.play(AssetHelper.getAsset("intro3.ogg", SOUND));
@@ -359,7 +359,7 @@ class PlayState extends MusicBeatState
 		}
 
 		/* Resync the vocals */
-		if (voicesObject != null)
+		if (voicesObject != null && voicesObject.playing && FlxG.sound.music.playing)
 		{
 			var delta:Float = voicesObject.time - FlxG.sound.music.time;
 			if (Math.abs(delta) >= 5)
@@ -369,7 +369,21 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		stage.onBeat(Conductor.beat);
+		stage.onBeat(beat);
+	}
+
+	override function onTick(tick:Int):Void
+	{
+		if (chartData != null && chartData.gameplayEvents != null)
+		{		
+			while (chartData.gameplayEvents.length > 0 && chartData.gameplayEvents[0].tick <= tick)
+			{
+				processGameplayEvent(chartData.gameplayEvents[0].type);
+				chartData.gameplayEvents.shift();
+			}
+		}
+
+		stage.onTick(tick);
 	}
 
 	function getGameplayConfig()

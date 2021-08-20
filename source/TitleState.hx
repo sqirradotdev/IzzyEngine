@@ -124,16 +124,16 @@ class TitleState extends MusicBeatState
 		}
 	}
 
-	override public function onBeat():Void
+	override public function onBeat(beat):Void
 	{
-		if ((Conductor.beat % 2) == 0)
+		if ((beat % 2) == 0)
 			gfDanceTitle.animation.play("danceLeft");
 		else
 			gfDanceTitle.animation.play("danceRight");
 
 		if (!introSkipped)
 		{
-			switch (Conductor.beat)
+			switch (beat)
 			{
 				case 1:
 					addTexts(['ninjamuffin', 'phantomArcade', 'kawaisprite', 'evilsker']);

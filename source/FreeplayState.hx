@@ -123,10 +123,10 @@ class FreeplayState extends MusicBeatState
 		}
 	}
 
-	override function onBeat():Void
+	override function onBeat(beat):Void
 	{
-		bg.scale.x += 0.015;
-		bg.scale.y += 0.015;
+		bg.scale.x = 1.015;
+		bg.scale.y = 1.015;
 	}
 
 	function changeSongSelection(selection:Int = 0)

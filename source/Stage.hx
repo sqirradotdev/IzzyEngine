@@ -48,6 +48,12 @@ class Stage extends FlxTypedGroup<FlxBasic>
 			scriptHelper.getVar("_onBeat")(beat);
 	}
 
+	public function onTick(tick:Int)
+	{
+		if (scriptHelper.getVar("_onTick") != null)
+			scriptHelper.getVar("_onTick")(tick);
+	}
+
 	function addKeyCharacter(who:String, x:Int, y:Int, scrollX:Float = 1.0, scrollY:Float = 1.0):Bool
 	{
 		switch (who)
