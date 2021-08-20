@@ -76,7 +76,7 @@ class SongDatabase
 		var songMetadata:SongMetadata = {
 			songName: "",
 			bpm: 100,
-			characters: ["dad", "bf"],
+			characters: ["dad", "bf", "gf"],
 			stage: "stage",
 			noteStyle: "default"
 		};
