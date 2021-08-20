@@ -11,6 +11,7 @@ import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
+import flixel.math.FlxPoint;
 import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
@@ -51,6 +52,14 @@ typedef TimeWindow =
 	var good:Float;
 	var bad:Float;
 	var shit:Float;
+}
+
+enum GameplayEvents
+{
+	ChangeCamera(whose:Int);
+	PlayCharacterAnim(whose:Int, name:String, force:Bool, supressDuration:Int);
+	SetCharacterSingSuffix(whose:Int, suffix:Null<String>);
+	SetCharacterIdleSuffix(whose:Int, suffix:Null<String>);
 }
 
 class PlayState extends MusicBeatState
@@ -119,6 +128,8 @@ class PlayState extends MusicBeatState
 		getChartData();
 		getSongAudio();
 
+		Conductor.time = -((60.0 / Conductor.bpm) * 5);
+
 		/* Cache sounds to prevent hiccups */
 		AssetHelper.getAsset("intro3.ogg", SOUND);
 		AssetHelper.getAsset("intro2.ogg", SOUND);
@@ -130,14 +141,30 @@ class PlayState extends MusicBeatState
 		AssetHelper.getAsset("missnote3.ogg", SOUND);
 
 		stageCamera = FlxG.camera;
+		stageCamera.zoom = 1.05;
 
 		uiCamera = new FlxCamera();
 		uiCamera.bgColor = FlxColor.TRANSPARENT;
 
 		FlxG.cameras.add(uiCamera, false);
 
-		stage = new Stage(currentSong.characters, currentSong.stage);
+		stage = new Stage(currentSong.stage, currentSong.characters, stageCamera);
 		add(stage);
+
+		stageCameraFollow = new FlxObject(0, 0);
+		add(stageCameraFollow);
+
+		stageCamera.follow(stageCameraFollow, LOCKON);
+
+		/* Get the first ChangeCamera gameplay event */
+		for (eventStruct in chartData.gameplayEvents)
+		{
+			if (Type.enumIndex(eventStruct.type) == Type.enumIndex(ChangeCamera(0)))
+			{
+				processGameplayEvent(chartData.gameplayEvents[0].type);
+				break;
+			}
+		}
 
 		enemyStrumLine = new StrumLine(265, 50, 1.0, chartData.noteSpeed);
 		enemyStrumLine.camera = uiCamera;
@@ -156,9 +183,6 @@ class PlayState extends MusicBeatState
 			playerStrumLine.addNote(noteData.strumIndex, noteData.time, noteData.holdTime);
 
 		startCountDown();
-
-		// FlxTween.tween(enemyStrumLine, {noteSpeed: 1.5}, 0.2, {type: PINGPONG, ease: FlxEase.sineInOut});
-		// FlxTween.tween(playerStrumLine, {noteSpeed: 1.5}, 0.2, {type: PINGPONG, ease: FlxEase.sineInOut});
 	}
 
 	override public function update(elapsed:Float)
@@ -170,6 +194,8 @@ class PlayState extends MusicBeatState
 			if (countingDown)
 				Conductor.time = -countDownTimer.timeLeft;
 		}
+
+		stageCamera.followLerp = elapsed;
 
 		var input:Array<Bool> = [
 			FlxG.keys.pressed.D,
@@ -192,44 +218,41 @@ class PlayState extends MusicBeatState
 					{
 						var noteIndex:Int = 0;
 
-						/* Make sure that the note exists */
+						/* Do a while loop until there's no note left */
 						while (chartData.playerNotes[noteIndex] != null)
 						{
-							/* If a note in an array matches strumIndex with the current input */
+							/* If the note matches strumIndex with the current input */
 							if (chartData.playerNotes[noteIndex].strumIndex == i)
 							{
 								var hitTime:Float = chartData.playerNotes[noteIndex].time - Conductor.time;
 								/* Check if it's in a hit window (the lowest judgement) */
 								if (hitTime < gameplayConfig.timeWindow.shit)
 								{
-									/* If it's not a note hold */
+									/* Remove note if there's no note */
 									if (chartData.playerNotes[noteIndex].holdTime == 0.0)
 									{
 										playerStrumLine.removeNote(i, chartData.playerNotes[noteIndex].time);
 										stage.player.playSingAnim(i);
 									}
-									/* It's a note hold */
+									/* Do additional steps for note hold */
 									else
 									{
 										playerStrumLine.getNote(i, chartData.playerNotes[noteIndex].time).arrow.visible = false;
 										currentPlayerNoteHold.push(chartData.playerNotes[noteIndex]);
 									}
 
-									if (playerStrumLine.getCurrentStrumAnim(i).name != "hit")
-										playerStrumLine.playStrumAnim(i, "hit");
-
 									chartData.playerNotes.remove(chartData.playerNotes[noteIndex]);
-
 									hitBehaviour(hitTime);
 
-									var msHitTime:Int = Math.floor(hitTime * 1000);
-									trace("Hit: " + msHitTime + " ms");
+									/* Play a glowing hit animation */
+									if (playerStrumLine.getCurrentStrumAnim(i).name != "hit")
+										playerStrumLine.playStrumAnim(i, "hit");
 								}
 								/* Break while loop because it found the note it wants */
 								break;
 							}
+							/* If not, go to next note */
 							else
-								/* If not, go to next array */
 								noteIndex++;
 						}
 					}
@@ -263,7 +286,7 @@ class PlayState extends MusicBeatState
 
 		/* Note holds */
 		for (note in currentPlayerNoteHold)
-		{
+		{		
 			var holdProgress:Float = Conductor.time - note.time;
 			var noteObject:NoteObject = playerStrumLine.getNote(note.strumIndex, note.time);
 
@@ -332,15 +355,20 @@ class PlayState extends MusicBeatState
 		}
 
 		/* Update strum line time based on Conductor time */
-		enemyStrumLine.time = Conductor.interpTime;
-		playerStrumLine.time = Conductor.interpTime;
+		if (FlxG.sound.music.playing || countingDown)
+		{
+			enemyStrumLine.time = Conductor.interpTime;
+			playerStrumLine.time = Conductor.interpTime;
+		}
 
 		if (subState == null)
 		{
+		/*
 			if (FlxG.keys.pressed.SEVEN)
 			{
 				openSubState(new CharterSubState());
 			}
+		*/
 			if (FlxG.keys.justPressed.ESCAPE)
 			{
 				quit();
@@ -426,6 +454,9 @@ class PlayState extends MusicBeatState
 		trace(songPaths);
 
 		chartData = ChartReader.readChart(songPaths[0]);
+		
+		chartData.enemyNotes.sort((a, b) -> Std.int(a.time * 100) - Std.int(b.time * 100));
+		chartData.playerNotes.sort((a, b) -> Std.int(a.time * 100) - Std.int(b.time * 100));
 
 		Conductor.bpm = currentSong.bpm;
 	}
@@ -441,8 +472,6 @@ class PlayState extends MusicBeatState
 	 */
 	function startCountDown()
 	{
-		Conductor.time = -((60.0 / Conductor.bpm) * 5);
-
 		new FlxTimer().start(0.25, function(_:FlxTimer)
 		{
 			countDownTimer = new FlxTimer();
@@ -459,14 +488,44 @@ class PlayState extends MusicBeatState
 	 */
 	function startSong()
 	{
-		FlxG.sound.playMusic(inst);
+		FlxG.sound.playMusic(inst, 1, false);
+		FlxG.sound.music.onComplete = endSong;
+
 		voicesObject = FlxG.sound.play(voices);
+
 		countingDown = false;
+	}
+
+	function endSong()
+	{
+		FreeplayState.firstTime = false;
+		voicesObject.volume = 0;
+		quit();
+	}
+
+	function processGameplayEvent(event:GameplayEvents)
+	{	
+		switch (event)
+		{
+			case ChangeCamera(whose):
+				var point:FlxPoint = stage.getCharacterByIndex(whose).getCameraMidpoint();
+				stageCameraFollow.setPosition(point.x, point.y);
+			case PlayCharacterAnim(whose, name, force, supressDuration):
+				stage.getCharacterByIndex(whose).playAnim(name, force, supressDuration);
+			case SetCharacterIdleSuffix(whose, suffix):
+				stage.getCharacterByIndex(whose).idleSuffix = suffix;
+			case SetCharacterSingSuffix(whose, suffix):
+				stage.getCharacterByIndex(whose).singSuffix = suffix;
+			default:
+				{}
+		}
 	}
 
 	function pushJudgement(judgement:Judgement)
 	{
-		switch (judgement)
+		// TODO: finish pushJudgement
+		
+		/* switch (judgement)
 		{
 			case SICK:
 				trace("SICK");
@@ -478,7 +537,7 @@ class PlayState extends MusicBeatState
 				trace("SHIT");
 			case MISS:
 				trace("MISS");
-		}
+		} */
 	}
 
 	/** 
@@ -525,6 +584,8 @@ class PlayState extends MusicBeatState
 	 */
 	function quit()
 	{
+		FlxG.sound.music.onComplete = null;
+
 		switch (currentMode)
 		{
 			case FREEPLAY:

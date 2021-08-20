@@ -1,15 +1,31 @@
 package;
 
+import PlayState.GameplayEvents;
 import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.util.FlxTimer;
+
+typedef EventStruct<ET> = 
+{
+	var type:ET;
+	var tick:Int;
+}
+
+enum TimeEvents
+{
+	BPMChange(bpm:Int);
+	Stop(ticks:Int);
+}
 
 class Conductor extends FlxBasic
 {
 	// Music information
 	public static var bpm:Int = 100;
 	public static var bars:Int = 4;
-	public static var ticksPerBeat:Int = 4;
+	public static var ticksPerBeat:Int = 32;
+
+	// Store timing and gameplay events separately
+	public static var timeEvents:Array<EventStruct<TimeEvents>> = [];
 
 	// Tracking variables
 	public static var time:Float = 0;
@@ -53,28 +69,10 @@ class Conductor extends FlxBasic
 			if (Math.abs(delta) >= 0.05)
 			{
 				interpTime = time;
-				// Update interpTime to match actual time every 500 ms
-				interpTimeUpdateTimer = new FlxTimer().start(0.5, function(timer:FlxTimer)
-				{
-					interpTime = time;
-					timer.reset(0.5);
-				});
-
-				// Also update interpTime when the frame delta is too high (below 10 FPS-ish)
-				if (elapsed >= 0.1)
-				{
-					interpTime = time;
-				}
 			}
 		}
 		else
 		{
-			if (interpTimeUpdateTimer != null)
-			{
-				interpTimeUpdateTimer.cancel();
-				interpTimeUpdateTimer = null;
-			}
-
 			// Always match with actual time when music stopped
 			interpTime = time;
 		}

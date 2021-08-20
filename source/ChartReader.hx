@@ -1,5 +1,8 @@
 package;
 
+import Conductor.EventStruct;
+import Conductor.TimeEvents;
+import PlayState.GameplayEvents;
 import haxe.Json;
 import haxe.macro.Type.AnonType;
 import sys.io.File;
@@ -16,6 +19,8 @@ typedef ChartData =
 	var noteSpeed:Float;
 	var enemyNotes:Array<NoteData>;
 	var playerNotes:Array<NoteData>;
+	var timeEvents:Array<EventStruct<TimeEvents>>;
+	var gameplayEvents:Array<EventStruct<GameplayEvents>>;
 }
 
 typedef NoteData =
@@ -52,19 +57,27 @@ class ChartReader
 			bpm: 0,
 			noteSpeed: 1.0,
 			enemyNotes: [],
-			playerNotes: []
+			playerNotes: [],
+			timeEvents: [],
+			gameplayEvents: []
 		};
 
+		var totalTicks:Int = 0;
+
 		var parsedJson = Json.parse(contents);
-
 		chartData.noteSpeed = Reflect.field(Reflect.field(parsedJson, "song"), "speed");
-
 		var sectionInformation:Array<AnonType> = Reflect.field(Reflect.field(parsedJson, "song"), "notes");
 		for (notes in sectionInformation)
 		{
 			var mustHitSection:Bool = Reflect.field(notes, "mustHitSection");
+			chartData.gameplayEvents.push({type: ChangeCamera(mustHitSection ? 1 : 0), tick: totalTicks});
+			
+			var altAnim:Bool = Reflect.field(notes, "altAnim");
+			chartData.gameplayEvents.push({type: SetCharacterSingSuffix(0, altAnim ? "-alt" : ""), tick: totalTicks});
+
+			totalTicks += Conductor.ticksPerBeat * 4;
+
 			var sectionNotes:Array<Array<Dynamic>> = Reflect.field(notes, "sectionNotes");
-			trace(sectionNotes);
 			for (sectionNote in sectionNotes)
 			{
 				// True means player, false means enemy (following mustHitSection)

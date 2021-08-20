@@ -1,28 +1,32 @@
 package;
 
 import flixel.FlxBasic;
+import flixel.FlxCamera;
 import flixel.group.FlxGroup.FlxTypedGroup;
 
 class Stage extends FlxTypedGroup<FlxBasic>
 {
-	var scriptHelper:ScriptHelper;
+	public var gf:Character;
+	public var enemy:Character;
+	public var player:Character;
 
+	var scriptHelper:ScriptHelper;
 	var characters:Array<String>;
 
-	var gf:Character;
-	var enemy:Character;
-	var player:Character;
+	var stageCamera:FlxCamera;
 
-	public function new(characters:Array<String>, stage:String)
+	public function new(stage:String, characters:Array<String>, stageCamera:FlxCamera)
 	{
 		super();
 
 		this.characters = characters;
+		this.stageCamera = stageCamera;
 
 		scriptHelper = new ScriptHelper();
 
 		scriptHelper.setVar("addKeyCharacter", addKeyCharacter);
 		scriptHelper.setVar("stage", this);
+		scriptHelper.setVar("stageCamera", stageCamera);
 
 		scriptHelper.loadScript("./data/stages/" + stage + ".hscript");
 
@@ -82,5 +86,22 @@ class Stage extends FlxTypedGroup<FlxBasic>
 		}
 
 		return true;
+	}
+
+	public function getCharacterByIndex(whose:Int):Character
+	{
+		switch (whose)
+		{
+			case 0:
+				return enemy;
+			case 1:
+				return player;
+			case 2:
+				return gf;
+			default:
+				return null;
+		}
+
+		return null;
 	}
 }
