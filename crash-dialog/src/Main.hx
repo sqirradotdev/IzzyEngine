@@ -21,7 +21,14 @@ class Main
 		"Izzy Engine is D-izzy.", // 52
 		"Useless, but not for long.", // ito
 		"He's in your bed, and Izzy has crashed.", // ito
-		"I think I'm dying this time." // ito
+		"I think I'm dying this time.", // ito
+		"Skill issue.", // shubs
+		"Tight bars. Can't say the same for the game.", // shubs
+		"Totally not stolen from NotITG!", // shubs
+		"And I was just about to beat it too!", // shubs
+		"Almost as dead as Garcello.", // shubs
+		"Please stop you aren't even making sense!", // shubs
+		"You were so bad the game just crashed.",  // shubs
 	];
 
 	public static function main()
