@@ -8,7 +8,7 @@
 
 Izzy Engine is a complete recreation of Friday Night Funkin'. Think of it as [opsu!](https://github.com/itdelatrisu/opsu) but for Friday Night Funkin', with great customizability in mind.
 
-My goal is to make a framework that is accesible, easy to use, and close to the original as possible, with a sprinkle of fixes and quality of life features.
+My goal is to make a framework that is accessible, easy to use, and close to the original as possible, with a sprinkle of fixes and quality of life features.
 
 ## Features Planned and Implemented
 
