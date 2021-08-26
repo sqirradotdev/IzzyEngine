@@ -12,12 +12,12 @@ My goal is to make a framework that is accessible, easy to use, and close to the
 
 ## Features Planned and Implemented
 
-- [x] Un-hardcode characters with .json **[Completed]**
-- [x] Un-hardcode weeks with .json **[Completed]**
-- [x] Un-hardcode note styles with .json **[Completed]**
+- [X] Un-hardcode characters with .json **[Completed]**
+- [X] Un-hardcode weeks with .json **[Completed]**
+- [X] Un-hardcode note styles with .json **[Completed]**
 - [X] Un-hardcode stages with .hscript **[Partial]**
-- [x] Gameplay logic **[Partial]**
-- [x] Event system **[Partial]**
+- [X] Gameplay logic **[Partial]**
+- [X] Event system **[Partial]**
 - [ ] Controls remapping
 - [ ] Charter
 - [ ] Song Modchart support with .hscript
