@@ -211,159 +211,160 @@ class PlayState extends MusicBeatState
 		if (!paused)
 		{
 			// Player input handling
-		for (i in 0...input.length)
-		{
-				// If an input was pressed
-			if (input[i])
+			for (i in 0...input.length)
 			{
-					// Check if prevInput is not null
-				if (prevInput != null)
+				// If an input was pressed
+				if (input[i])
 				{
-						// Check if it's just pressed once
-					if (input[i] != prevInput[i])
+					// Check if prevInput is not null
+					if (prevInput != null)
 					{
-						var noteIndex:Int = 0;
-
-						/* Do a while loop until there's no note left */
-						while (chartData.playerNotes[noteIndex] != null)
+						// Check if it's just pressed once
+						if (input[i] != prevInput[i])
 						{
-								// If the note matches strumIndex with the current input
-							if (chartData.playerNotes[noteIndex].strumIndex == i)
-							{
-								var hitTime:Float = chartData.playerNotes[noteIndex].time - Conductor.time;
-									// Check if it's in a hit window (the lowest judgement)
-								if (hitTime < gameplayConfig.timeWindow.shit)
-								{
-										// Remove note if there's no note
-									if (chartData.playerNotes[noteIndex].holdTime == 0.0)
-									{
-										playerStrumLine.removeNote(i, chartData.playerNotes[noteIndex].time);
-										stage.player.playSingAnim(i);
-									}
-										// Do additional steps for note hold
-									else
-									{
-										playerStrumLine.getNote(i, chartData.playerNotes[noteIndex].time).arrow.visible = false;
-										currentPlayerNoteHold.push(chartData.playerNotes[noteIndex]);
-									}
+							var noteIndex:Int = 0;
 
-									chartData.playerNotes.remove(chartData.playerNotes[noteIndex]);
-									hitBehaviour(hitTime);
+							/* Do a while loop until there's no note left */
+							while (chartData.playerNotes[noteIndex] != null)
+							{
+								// If the note matches strumIndex with the current input
+								if (chartData.playerNotes[noteIndex].strumIndex == i)
+								{
+									var hitTime:Float = chartData.playerNotes[noteIndex].time - Conductor.time;
+									// Check if it's in a hit window (the lowest judgement)
+									if (hitTime < gameplayConfig.timeWindow.shit)
+									{
+										// Remove note if there's no note
+										if (chartData.playerNotes[noteIndex].holdTime == 0.0)
+										{
+											playerStrumLine.removeNote(i, chartData.playerNotes[noteIndex].time);
+											stage.player.playSingAnim(i);
+										}
+										// Do additional steps for note hold
+										else
+										{
+											playerStrumLine.getNote(i, chartData.playerNotes[noteIndex].time).arrow.visible = false;
+											currentPlayerNoteHold.push(chartData.playerNotes[noteIndex]);
+										}
+
+										chartData.playerNotes.remove(chartData.playerNotes[noteIndex]);
+										hitBehaviour(hitTime);
 
 										// Play a glowing hit animation
-									if (playerStrumLine.getCurrentStrumAnim(i).name != "hit")
-										playerStrumLine.playStrumAnim(i, "hit");
-								}
+										if (playerStrumLine.getCurrentStrumAnim(i).name != "hit")
+											playerStrumLine.playStrumAnim(i, "hit");
+									}
 									// Break while loop because it found the note it wants
-								break;
-							}
+									break;
+								}
 								// If not, go to next note
-							else
-								noteIndex++;
+								else
+									noteIndex++;
+							}
+						}
+						// If not, play a basic pressed animation
+						else
+						{
+							if (playerStrumLine.getCurrentStrumAnim(i).name != "pressed"
+								&& playerStrumLine.getCurrentStrumAnim(i).name != "hit")
+								playerStrumLine.playStrumAnim(i, "pressed");
 						}
 					}
-						// If not, play a basic pressed animation
-					else
-					{
-						if (playerStrumLine.getCurrentStrumAnim(i).name != "pressed"
-							&& playerStrumLine.getCurrentStrumAnim(i).name != "hit")
-							playerStrumLine.playStrumAnim(i, "pressed");
-					}
+				}
+				// If not, play an idle animation
+				else
+				{
+					if (playerStrumLine.getCurrentStrumAnim(i).name != "idle")
+						playerStrumLine.playStrumAnim(i, "idle");
 				}
 			}
-				// If not, play an idle animation
-			else
-			{
-				if (playerStrumLine.getCurrentStrumAnim(i).name != "idle")
-					playerStrumLine.playStrumAnim(i, "idle");
-			}
-		}
 
 			// Player note miss
 			while (chartData.playerNotes[0] != null && chartData.playerNotes[0].time - Conductor.time < -gameplayConfig.timeWindow.shit)
-		{
-			trace("Miss note time " + chartData.playerNotes[0].time);
+			{
+				trace("Miss note time " + chartData.playerNotes[0].time);
 
-			playerStrumLine.invalidateNote(chartData.playerNotes[0].strumIndex, chartData.playerNotes[0].time);
-			stage.player.playMissAnim(chartData.playerNotes[0].strumIndex);
-			chartData.playerNotes.shift();
-			missBehaviour();
-		}
+				playerStrumLine.invalidateNote(chartData.playerNotes[0].strumIndex, chartData.playerNotes[0].time);
+				stage.player.playMissAnim(chartData.playerNotes[0].strumIndex);
+				chartData.playerNotes.shift();
+				missBehaviour();
+			}
 
 			// Note holds
-		for (note in currentPlayerNoteHold)
+			for (note in currentPlayerNoteHold)
+			{		
 		{		
-			var holdProgress:Float = Conductor.time - note.time;
-			var noteObject:NoteObject = playerStrumLine.getNote(note.strumIndex, note.time);
+			{		
+				var holdProgress:Float = Conductor.time - note.time;
+				var noteObject:NoteObject = playerStrumLine.getNote(note.strumIndex, note.time);
 
-			stage.player.playSingAnim(noteObject.strumIndex, "", false);
+				stage.player.playSingAnim(noteObject.strumIndex, "", false);
 
-			noteObject.holdProgress = Conductor.interpTime - note.time;
+				noteObject.holdProgress = Conductor.interpTime - note.time;
 
-			if (!input[note.strumIndex])
-			{
-				playerStrumLine.invalidateNote(note.strumIndex, note.time);
-				currentPlayerNoteHold.remove(note);
-				stage.player.playMissAnim(note.strumIndex);
-				missBehaviour(false);
-			}
-			if (holdProgress > note.holdTime)
-			{
-				currentPlayerNoteHold.remove(note);
-				playerStrumLine.removeNote(note.strumIndex, note.time);
-			}
-		}
-
-		prevInput = input;
-
-			// Enemy autoplay
-		var enemyNoteIndex:Int = 0;
-		while (chartData.enemyNotes[enemyNoteIndex] != null && chartData.enemyNotes[enemyNoteIndex].time - Conductor.time < 0)
-		{
-			var strumIndex:Int = chartData.enemyNotes[enemyNoteIndex].strumIndex;
-			var noteObject:NoteObject = enemyStrumLine.getNote(strumIndex, chartData.enemyNotes[0].time);
-
-			if (chartData.enemyNotes[enemyNoteIndex].holdTime == 0.0)
-			{
-				enemyStrumLine.removeNote(strumIndex, chartData.enemyNotes[enemyNoteIndex].time);
-				chartData.enemyNotes.remove(chartData.enemyNotes[enemyNoteIndex]);
-
-				enemyStrumLine.playStrumAnim(strumIndex, "hit");
-					stage.getCharacterByIndex(0).playSingAnim(strumIndex);
-
-				new FlxTimer().start(0.1, function(_:FlxTimer)
+				if (!input[note.strumIndex])
 				{
-					enemyStrumLine.playStrumAnim(strumIndex, "idle");
-				});
-			}
-			else
-			{
-				enemyStrumLine.playStrumAnim(strumIndex, "hit");
-					stage.getCharacterByIndex(0).playSingAnim(strumIndex, "", false);
-
-				if (noteObject != null)
+					playerStrumLine.invalidateNote(note.strumIndex, note.time);
+					currentPlayerNoteHold.remove(note);
+					stage.player.playMissAnim(note.strumIndex);
+					missBehaviour(false);
+				}
+				if (holdProgress > note.holdTime)
 				{
-					noteObject.arrow.visible = false;
-					noteObject.holdProgress = Conductor.interpTime - noteObject.time;
-					if (noteObject.holdProgress > noteObject.holdTime)
-					{
-						enemyStrumLine.playStrumAnim(strumIndex, "idle");
-
-						enemyStrumLine.removeNote(strumIndex, chartData.enemyNotes[enemyNoteIndex].time);
-						chartData.enemyNotes.remove(chartData.enemyNotes[enemyNoteIndex]);
-					}
+					currentPlayerNoteHold.remove(note);
+					playerStrumLine.removeNote(note.strumIndex, note.time);
 				}
 			}
 
+			prevInput = input;
+
+			// Enemy autoplay
+			var enemyNoteIndex:Int = 0;
+			while (chartData.enemyNotes[enemyNoteIndex] != null && chartData.enemyNotes[enemyNoteIndex].time - Conductor.time < 0)
+			{
+				var strumIndex:Int = chartData.enemyNotes[enemyNoteIndex].strumIndex;
+				var noteObject:NoteObject = enemyStrumLine.getNote(strumIndex, chartData.enemyNotes[0].time);
+
+				if (chartData.enemyNotes[enemyNoteIndex].holdTime == 0.0)
+				{
+					enemyStrumLine.removeNote(strumIndex, chartData.enemyNotes[enemyNoteIndex].time);
+					chartData.enemyNotes.remove(chartData.enemyNotes[enemyNoteIndex]);
+
+					enemyStrumLine.playStrumAnim(strumIndex, "hit");
+					stage.getCharacterByIndex(0).playSingAnim(strumIndex);
+
+					new FlxTimer().start(0.1, function(_:FlxTimer)
+					{
+						enemyStrumLine.playStrumAnim(strumIndex, "idle");
+					});
+				}
+				else
+				{
+					enemyStrumLine.playStrumAnim(strumIndex, "hit");
+					stage.getCharacterByIndex(0).playSingAnim(strumIndex, "", false);
+
+					if (noteObject != null)
+					{
+						noteObject.arrow.visible = false;
+						noteObject.holdProgress = Conductor.interpTime - noteObject.time;
+						if (noteObject.holdProgress > noteObject.holdTime)
+						{
+							enemyStrumLine.playStrumAnim(strumIndex, "idle");
+
+							enemyStrumLine.removeNote(strumIndex, chartData.enemyNotes[enemyNoteIndex].time);
+							chartData.enemyNotes.remove(chartData.enemyNotes[enemyNoteIndex]);
+						}
+					}
+				}
+
 				if (voicesObject != null)
-			voicesObject.volume = 1.0;
+					voicesObject.volume = 1.0;
 
-			enemyNoteIndex++;
+				enemyNoteIndex++;
+			}
 		}
-		}
-
-		/* Update strum line time based on Conductor time */
-		if (FlxG.sound.music.playing || countingDown)
+			
+		// Update strum line time based on Conductor time
 		{
 			enemyStrumLine.time = Conductor.interpTime;
 			playerStrumLine.time = Conductor.interpTime;
