@@ -3,8 +3,5 @@
 	"noteStyle": "default",
 	"bpm": 100,
 	"songName": "tutorial",
-	"characters": [
-		"dad",
-		"bf"
-	]
+	"characters": ["", "bf", "gf"]
 }

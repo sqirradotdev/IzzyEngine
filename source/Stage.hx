@@ -44,8 +44,11 @@ class Stage extends FlxTypedGroup<FlxBasic>
 
 	public function onBeat(beat:Int)
 	{
-		gf.playIdle(beat);
-		enemy.playIdle(beat);
+		if (gf != null)
+			gf.playIdle(beat);
+		if (enemy != null)
+			enemy.playIdle(beat);
+		
 		player.playIdle(beat);
 
 		if (scriptHelper.getVar("_onBeat") != null)
@@ -63,23 +66,32 @@ class Stage extends FlxTypedGroup<FlxBasic>
 		switch (who)
 		{
 			case "gf":
-				gf = new Character(x, y, characters[2]);
-				gf.scrollFactor.set(scrollX, scrollY);
-				add(gf);
-				gf.playIdle(0);
-				scriptHelper.setVar("gf", gf);
+				if (characters[2] != "")
+				{
+					gf = new Character(x, y, characters[2]);
+					gf.scrollFactor.set(scrollX, scrollY);
+					add(gf);
+					gf.playIdle(0);
+					scriptHelper.setVar("gf", gf);
+				}
 			case "enemy":
-				enemy = new Character(x, y, characters[0]);
-				enemy.scrollFactor.set(scrollX, scrollY);
-				add(enemy);
-				enemy.playIdle(0);
-				scriptHelper.setVar("enemy", enemy);
+				if (characters[0] != "")
+				{
+					enemy = new Character(x, y, characters[0]);
+					enemy.scrollFactor.set(scrollX, scrollY);
+					add(enemy);
+					enemy.playIdle(0);
+					scriptHelper.setVar("enemy", enemy);
+				}
 			case "player":
-				player = new Character(x, y, characters[1]);
-				player.scrollFactor.set(scrollX, scrollY);
-				add(player);
-				player.playIdle(0);
-				scriptHelper.setVar("player", player);
+				if (characters[1] != "")
+				{
+					player = new Character(x, y, characters[1]);
+					player.scrollFactor.set(scrollX, scrollY);
+					add(player);
+					player.playIdle(0);
+					scriptHelper.setVar("player", player);
+				}
 			default:
 				scriptHelper.scriptTrace("Error! Valid key characters are: gf, enemy, player");
 				return false;
@@ -93,7 +105,7 @@ class Stage extends FlxTypedGroup<FlxBasic>
 		switch (whose)
 		{
 			case 0:
-				return enemy;
+				return enemy != null ? enemy : gf;
 			case 1:
 				return player;
 			case 2:

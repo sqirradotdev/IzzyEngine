@@ -70,12 +70,12 @@ class PlayState extends MusicBeatState
 	var currentDifficulty:Difficulty = NORMAL;
 	var currentMode:Mode = FREEPLAY;
 	var songPaths:Array<String>;
+	var gameplayConfig:GameplayConfig;
 
 	var inst:Sound;
 	var voices:Sound;
 
-	var gameplayConfig:GameplayConfig;
-
+	var paused:Bool = false;
 	var countingDown:Bool = false;
 
 	var chartData:ChartData;
@@ -130,7 +130,7 @@ class PlayState extends MusicBeatState
 
 		Conductor.time = -((60.0 / Conductor.bpm) * 5);
 
-		/* Cache sounds to prevent hiccups */
+		// Cache sounds to prevent hiccups
 		AssetHelper.getAsset("intro3.ogg", SOUND);
 		AssetHelper.getAsset("intro2.ogg", SOUND);
 		AssetHelper.getAsset("intro1.ogg", SOUND);
@@ -156,7 +156,7 @@ class PlayState extends MusicBeatState
 
 		stageCamera.follow(stageCameraFollow, LOCKON);
 
-		/* Get the first ChangeCamera gameplay event */
+		// Get the first ChangeCamera gameplay event
 		for (eventStruct in chartData.gameplayEvents)
 		{
 			if (Type.enumIndex(eventStruct.type) == Type.enumIndex(ChangeCamera(0)))
@@ -182,6 +182,10 @@ class PlayState extends MusicBeatState
 		for (noteData in chartData.playerNotes)
 			playerStrumLine.addNote(noteData.strumIndex, noteData.time, noteData.holdTime);
 
+		// woah
+		// what if you just leave this in the code no context -shubs
+		// :troll:
+
 		startCountDown();
 	}
 
@@ -204,16 +208,18 @@ class PlayState extends MusicBeatState
 			FlxG.keys.pressed.K
 		];
 
-		/* Player input handling */
+		if (!paused)
+		{
+			// Player input handling
 		for (i in 0...input.length)
 		{
-			/* If an input was pressed */
+				// If an input was pressed
 			if (input[i])
 			{
-				/* Check if prevInput is not null */
+					// Check if prevInput is not null
 				if (prevInput != null)
 				{
-					/* Check if it's just pressed once */
+						// Check if it's just pressed once
 					if (input[i] != prevInput[i])
 					{
 						var noteIndex:Int = 0;
@@ -221,20 +227,20 @@ class PlayState extends MusicBeatState
 						/* Do a while loop until there's no note left */
 						while (chartData.playerNotes[noteIndex] != null)
 						{
-							/* If the note matches strumIndex with the current input */
+								// If the note matches strumIndex with the current input
 							if (chartData.playerNotes[noteIndex].strumIndex == i)
 							{
 								var hitTime:Float = chartData.playerNotes[noteIndex].time - Conductor.time;
-								/* Check if it's in a hit window (the lowest judgement) */
+									// Check if it's in a hit window (the lowest judgement)
 								if (hitTime < gameplayConfig.timeWindow.shit)
 								{
-									/* Remove note if there's no note */
+										// Remove note if there's no note
 									if (chartData.playerNotes[noteIndex].holdTime == 0.0)
 									{
 										playerStrumLine.removeNote(i, chartData.playerNotes[noteIndex].time);
 										stage.player.playSingAnim(i);
 									}
-									/* Do additional steps for note hold */
+										// Do additional steps for note hold
 									else
 									{
 										playerStrumLine.getNote(i, chartData.playerNotes[noteIndex].time).arrow.visible = false;
@@ -244,19 +250,19 @@ class PlayState extends MusicBeatState
 									chartData.playerNotes.remove(chartData.playerNotes[noteIndex]);
 									hitBehaviour(hitTime);
 
-									/* Play a glowing hit animation */
+										// Play a glowing hit animation
 									if (playerStrumLine.getCurrentStrumAnim(i).name != "hit")
 										playerStrumLine.playStrumAnim(i, "hit");
 								}
-								/* Break while loop because it found the note it wants */
+									// Break while loop because it found the note it wants
 								break;
 							}
-							/* If not, go to next note */
+								// If not, go to next note
 							else
 								noteIndex++;
 						}
 					}
-					/* If not, play a basic pressed animation */
+						// If not, play a basic pressed animation
 					else
 					{
 						if (playerStrumLine.getCurrentStrumAnim(i).name != "pressed"
@@ -265,7 +271,7 @@ class PlayState extends MusicBeatState
 					}
 				}
 			}
-			/* If not, play an idle animation */
+				// If not, play an idle animation
 			else
 			{
 				if (playerStrumLine.getCurrentStrumAnim(i).name != "idle")
@@ -273,8 +279,8 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		/* Player note miss */
-		while (chartData.playerNotes[0] != null && chartData.playerNotes[0].time - Conductor.time < -0.1)
+			// Player note miss
+			while (chartData.playerNotes[0] != null && chartData.playerNotes[0].time - Conductor.time < -gameplayConfig.timeWindow.shit)
 		{
 			trace("Miss note time " + chartData.playerNotes[0].time);
 
@@ -284,7 +290,7 @@ class PlayState extends MusicBeatState
 			missBehaviour();
 		}
 
-		/* Note holds */
+			// Note holds
 		for (note in currentPlayerNoteHold)
 		{		
 			var holdProgress:Float = Conductor.time - note.time;
@@ -310,7 +316,7 @@ class PlayState extends MusicBeatState
 
 		prevInput = input;
 
-		/* Enemy autoplay */
+			// Enemy autoplay
 		var enemyNoteIndex:Int = 0;
 		while (chartData.enemyNotes[enemyNoteIndex] != null && chartData.enemyNotes[enemyNoteIndex].time - Conductor.time < 0)
 		{
@@ -323,7 +329,7 @@ class PlayState extends MusicBeatState
 				chartData.enemyNotes.remove(chartData.enemyNotes[enemyNoteIndex]);
 
 				enemyStrumLine.playStrumAnim(strumIndex, "hit");
-				stage.enemy.playSingAnim(strumIndex);
+					stage.getCharacterByIndex(0).playSingAnim(strumIndex);
 
 				new FlxTimer().start(0.1, function(_:FlxTimer)
 				{
@@ -333,7 +339,7 @@ class PlayState extends MusicBeatState
 			else
 			{
 				enemyStrumLine.playStrumAnim(strumIndex, "hit");
-				stage.enemy.playSingAnim(strumIndex, "", false);
+					stage.getCharacterByIndex(0).playSingAnim(strumIndex, "", false);
 
 				if (noteObject != null)
 				{
@@ -349,9 +355,11 @@ class PlayState extends MusicBeatState
 				}
 			}
 
+				if (voicesObject != null)
 			voicesObject.volume = 1.0;
 
 			enemyNoteIndex++;
+		}
 		}
 
 		/* Update strum line time based on Conductor time */
@@ -393,7 +401,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		/* Resync the vocals */
+		// Resync the vocals
 		if (voicesObject != null && voicesObject.playing && FlxG.sound.music.playing)
 		{
 			var delta:Float = voicesObject.time - FlxG.sound.music.time;
@@ -461,14 +469,18 @@ class PlayState extends MusicBeatState
 		Conductor.bpm = currentSong.bpm;
 	}
 
+	/** 
+	 * Prepare the song's audio files
+	 */
 	function getSongAudio()
 	{
 		inst = Sound.fromFile("./" + songPaths[1]);
+		if (songPaths[2] != "")
 		voices = Sound.fromFile("./" + songPaths[2]);
 	}
 
 	/** 
-	 * Start the song countdown
+	 * Start song countdown
 	 */
 	function startCountDown()
 	{
@@ -488,21 +500,36 @@ class PlayState extends MusicBeatState
 	 */
 	function startSong()
 	{
+		if (countDownTimer != null)
+		{
+			countDownTimer.cancel();
+			countDownTimer.destroy();
+			countDownTimer = null;
+		}
+		
 		FlxG.sound.playMusic(inst, 1, false);
 		FlxG.sound.music.onComplete = endSong;
 
+		if (voices != null)
 		voicesObject = FlxG.sound.play(voices);
 
 		countingDown = false;
 	}
 
+	/** 
+	 * Set of instructions to run when the song is over
+	 */
 	function endSong()
 	{
 		FreeplayState.firstTime = false;
+		if (voicesObject != null)
 		voicesObject.volume = 0;
 		quit();
 	}
 
+	/** 
+	 * Process gameplay event, used in onTick to process upcoming events on a tick.
+	 */
 	function processGameplayEvent(event:GameplayEvents)
 	{	
 		switch (event)
@@ -521,6 +548,9 @@ class PlayState extends MusicBeatState
 		}
 	}
 
+	/** 
+	 * Push out judgements to screen and also record it
+	 */
 	function pushJudgement(judgement:Judgement)
 	{
 		// TODO: finish pushJudgement
@@ -541,14 +571,14 @@ class PlayState extends MusicBeatState
 	}
 
 	/** 
-	 * Do stuffs when succesfully hitting a note
+	 * Set of instructions to run when succesfully hitting a note
 	 */
 	function hitBehaviour(hitTime:Float)
 	{
 		hitTime = Math.abs(hitTime);
 		var judgement:Judgement = SHIT;
 
-		/* Process judgements */
+		// Process judgements
 		if (hitTime >= 0.0 && hitTime < gameplayConfig.timeWindow.sick)
 			judgement = SICK;
 		else if (hitTime >= gameplayConfig.timeWindow.sick && hitTime < gameplayConfig.timeWindow.good)
@@ -565,7 +595,7 @@ class PlayState extends MusicBeatState
 	}
 
 	/** 
-	 * Do stuffs when missing a note
+	 * Set of instructions to run when missing a note
 	 */
 	function missBehaviour(decreaseHealth:Bool = true)
 	{
@@ -574,7 +604,7 @@ class PlayState extends MusicBeatState
 		if (voicesObject != null)
 			voicesObject.volume = 0.0;
 
-		/* Random miss sound from 1 to 3 */
+		// Random miss sound from 1 to 3
 		var random:Int = Std.random(3) + 1;
 		FlxG.sound.play(AssetHelper.getAsset("missnote" + random + ".ogg", SOUND), 0.2);
 	}

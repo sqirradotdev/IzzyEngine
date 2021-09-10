@@ -101,6 +101,8 @@ class SongDatabase
 	{
 		var dir:String = "songs/" + song + "/";
 		var chartPath:String = "";
+		var instPath:String = "";
+		var voicesPath:String = "";
 
 		switch (difficulty)
 		{
@@ -119,6 +121,11 @@ class SongDatabase
 		else
 			chartPath = "";
 
-		return [chartPath, dir + "Inst.ogg", dir + "Voices.ogg"];
+		if (FileSystem.exists("./" + dir + "Inst.ogg"))
+			instPath = dir + "Inst.ogg";
+		if (FileSystem.exists("./" + dir + "Voices.ogg"))
+			voicesPath = dir + "Voices.ogg";
+
+		return [chartPath, instPath, voicesPath];
 	}
 }
