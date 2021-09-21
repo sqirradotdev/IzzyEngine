@@ -1,9 +1,9 @@
 var halloweenBg;
 var lightningBeatTimer = 0;
 
-function _create()
+function onCreate()
 {
-    halloweenBg = makeSprite(-200, -100);
+    halloweenBg = createSprite(-200, -100);
     halloweenBg.frames = getSparrowAtlas("halloween_bg", "week2");
     halloweenBg.animation.addByPrefix("idle", "halloweem bg0");
     halloweenBg.animation.addByPrefix("lightning", "halloweem bg lightning strike", 24, false);
@@ -11,12 +11,12 @@ function _create()
     halloweenBg.antialiasing = true;
     stage.add(halloweenBg);
 
-    addKeyCharacter("gf", 400, 778);
-    addKeyCharacter("enemy", 100, 867);
-    addKeyCharacter("player", 770, 862);
+    addGf(400, 778);
+    addEnemy(100, 867);
+    addPlayer(770, 862);
 }
 
-function _onBeat(beat)
+function onBeat(beat)
 {
     if (beat > 4)
     {

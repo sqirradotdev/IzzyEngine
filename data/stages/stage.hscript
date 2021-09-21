@@ -1,18 +1,32 @@
+/*
+ * Exposed functions and variables (Stage specific):
+ * 
+ * function addEnemy(x:Int, y:Int, scrollX:Float = 1.0, scrollY:Float = 1.0):Bool
+ * function addPlayer(x:Int, y:Int, scrollX:Float = 1.0, scrollY:Float = 1.0):Bool
+ * function addGf(x:Int, y:Int, scrollX:Float = 1.0, scrollY:Float = 1.0):Bool
+ * 
+ * var      stage:FlxTypedGroup<FlxBasic>
+ * var      stageCamera:FlxCamera
+ * var      uiCamera:FlxCamera
+ * 
+ * For more information, check out the wiki document here: [Hyperlink Removed]
+ */
+
 var bg;
 var stageFront;
 var stageCurtains;
 
-function _create()
+function onCreate()
 {
     stageCamera.zoom = 0.9;
     
     /* Add sprite with function helper */
-    bg = makeSprite(-600, -200);
+    bg = createSprite(-600, -200);
     bg.loadGraphic(getGraphic("stageback.png", "week1"));
     bg.scrollFactor.set(0.9, 0.9);
     stage.add(bg);
 
-    stageFront = makeSprite(-650, 600);
+    stageFront = createSprite(-650, 600);
     stageFront.loadGraphic(getGraphic("stagefront.png", "week1"));
     stageFront.scale.set(1.1, 1.1);
     stageFront.updateHitbox();
@@ -20,12 +34,12 @@ function _create()
     stage.add(stageFront);
 
     /* Add key characters, order matters because of layering */
-    addKeyCharacter("gf", 400, 778);
-    addKeyCharacter("enemy", 100, 867);
-    addKeyCharacter("player", 770, 862);
+    addGf(400, 778);
+    addEnemy(100, 867);
+    addPlayer(770, 862);
 
-    /* Stage curtains is in front of everything */
-    stageCurtains = makeSprite(-500, -300);
+    /* Stage curtain is in front of everything */
+    stageCurtains = createSprite(-500, -300);
     stageCurtains.loadGraphic(getGraphic("stagecurtains.png", "week1"));
     stageCurtains.scale.set(0.9, 0.9);
     stageCurtains.updateHitbox();

@@ -1,3 +1,4 @@
 export/
 crash-dialog/build/
 .vscode/
+docs/_build
