@@ -84,14 +84,18 @@ class Stage extends FlxTypedGroup<FlxBasic>
 				return false;
 		}
 
-		var character:Character = new Character(x, y, characters[whoId]);
-		character.scrollFactor.set(scrollX, scrollY);
-		add(character);
-		character.playIdle(0);
-		scriptHelper.set(who, character);
-		Reflect.setField(this, who, character);
+		if (characters[whoId] != "")
+		{
+			var character:Character = new Character(x, y, characters[whoId]);
+			character.scrollFactor.set(scrollX, scrollY);
+			add(character);
+			character.playIdle(0);
+			scriptHelper.set(who, character);
+			Reflect.setField(this, who, character);
+			return true;
+		}
 
-		return true;
+		return false;
 	}
 	
 	function addEnemy(x:Int, y:Int, scrollX:Float = 1.0, scrollY:Float = 1.0):Bool
