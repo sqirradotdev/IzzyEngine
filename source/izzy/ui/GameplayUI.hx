@@ -250,7 +250,7 @@ class StrumLine extends FlxTypedGroup<FlxSprite>
 			// Calculate note time relative to current song time
 			var timeRel:Float = note.time - time;
 
-			if (timeRel < 3.0)
+			if (timeRel < (3.0 / noteSpeed))
 			{
 				// Used for note hold rendering
 				note.noteSpeed = noteSpeed;
