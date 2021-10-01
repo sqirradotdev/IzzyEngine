@@ -1,0 +1,42 @@
+{
+    "name": "monster-christmas",
+    "atlasPath": [
+        "characters/monsterChristmas",
+        "week5"
+    ],
+    "flipX": false,
+    "height": 711,
+    "cameraOffset": [150.0, -100.0],
+    "idleSequence": ["idle"],
+    "animations": {
+        "idle": {
+            "fromPrefix": "monster idle",
+            "fps": 24,
+            "loop": false
+        },
+        "singUp": {
+            "fromPrefix": "monster up note",
+            "fps": 24,
+            "loop": false,
+            "offset": [20.0, -50.0]
+        },
+        "singLeft": {
+            "fromPrefix": "Monster left note",
+            "fps": 24,
+            "loop": false,
+            "offset": [30.0, 0.0]
+        },
+        "singRight": {
+            "fromPrefix": "Monster Right note",
+            "fps": 24,
+            "loop": false,
+            "offset": [51.0, 0.0]
+        },
+        "singDown": {
+            "fromPrefix": "monster down",
+            "fps": 24,
+            "loop": false,
+            "offset": [40.0, 94.0]
+        }
+    }
+}
