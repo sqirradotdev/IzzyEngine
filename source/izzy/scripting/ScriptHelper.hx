@@ -20,6 +20,8 @@ import sys.FileSystem;
 import sys.io.File;
 import sys.thread.Thread;
 
+class ScriptException extends Exception {}
+
 class ScriptHelper
 {
     public var expose:StringMap<Dynamic>;
@@ -36,26 +38,25 @@ class ScriptHelper
 
         parser.allowTypes = true;
 
-		expose = 
-		[
-			"Sys" => Sys,
-			"Std" => Std,
-			"Math" => Math,
-			"StringTools" => StringTools,
-			"FlxMath" => FlxMath,
-			"Conductor" => Conductor,
-			
-			"loadModule" => loadModule,
-			"createSprite" => createSprite,
-			"getGraphic" => getGraphic,
-			"playSound" => playSound,
-			"lazyPlaySound" => lazyPlaySound,
-			"createTimer" => createTimer,
-			"createShader" => createShader,
-			"createShaderFilter" => createShaderFilter,
+		expose = new StringMap<Dynamic>();
 
-			"getSparrowAtlas" => AssetHelper.getSparrowAtlas
-		];
+		expose.set("Sys", Sys);
+		expose.set("Std", Std);
+		expose.set("Math", Math);
+		expose.set("StringTools", StringTools);
+		expose.set("FlxMath", FlxMath);
+		expose.set("Conductor", Conductor);
+		
+		expose.set("loadModule", loadModule);
+		expose.set("createSprite", createSprite);
+		expose.set("getGraphic", getGraphic);
+		expose.set("playSound", playSound);
+		expose.set("lazyPlaySound", lazyPlaySound);
+		expose.set("createTimer", createTimer);
+		expose.set("createShader", createShader);
+		expose.set("createShaderFilter", createShaderFilter);
+
+		expose.set("getSparrowAtlas", AssetHelper.getSparrowAtlas);
     }
 
     public function get(field:String):Dynamic
@@ -85,17 +86,17 @@ class ScriptHelper
                 }
                 catch (e:Error)
                 {
-                    throw new Exception("Script parse error:\n" + e);
+                    throw new ScriptException("Script parse error:\n" + e);
                 }
             }
             else
             {
-                throw new Exception("Cannot locate script file in " + path);
+				throw new ScriptException("Cannot locate script file in " + path);
             }
         }
         else
         {
-            throw new Exception("Path is empty!");
+			throw new ScriptException("Path is empty!");
         }
     }
 
@@ -131,17 +132,17 @@ class ScriptHelper
 				}
 				catch (e:Error)
 				{
-					throw new Exception("Module parse error:\n" + e);
+					throw new ScriptException("Module parse error:\n" + e);
 				}
 			}
 			else
 			{
-				throw new Exception("Cannot locate module file in " + path);
+				throw new ScriptException("Cannot locate module file in " + path);
 			}
 		}
 		else
 		{
-			throw new Exception("Path is empty!");
+			throw new ScriptException("Path is empty!");
 		}
 	}
 

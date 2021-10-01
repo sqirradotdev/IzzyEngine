@@ -1,0 +1,154 @@
+var bg;
+var city;
+var phillyCityLights = [];
+var streetBehind;
+var phillyTrain;
+var street;
+
+var currentLightIndex = 0;
+var trainActive = false;
+var trainFinishing = false;
+var trainCars = 0;
+var trainDelta = 0.0;
+var trainTotalTime = 0.0;
+var trainCooldown = 0;
+
+function onCreate()
+{
+    bg = createSprite(-100, 0);
+    bg.loadGraphic(getGraphic("philly/sky.png", "week3"));
+    bg.scrollFactor.set(0.1, 0.1);
+    stage.add(bg);
+
+    city = createSprite(-10, 0);
+    city.loadGraphic(getGraphic("philly/city.png", "week3"));
+    city.scrollFactor.set(0.3, 0.3);
+    city.scale.set(0.85, 0.85);
+    city.updateHitbox();
+    stage.add(city);
+
+    for (i in 0...5)
+    {
+        var light = createSprite(city.x);
+        light.loadGraphic(getGraphic("philly/win" + i + ".png", "week3"));
+        light.scrollFactor.set(0.3, 0.3);
+        light.visible = false;
+        light.scale.set(0.85, 0.85);
+        light.updateHitbox();
+        stage.add(light);
+        phillyCityLights.push(light);
+    }
+
+    streetBehind = createSprite(-40, 50);
+    streetBehind.loadGraphic(getGraphic("philly/behindTrain.png", "week3"));
+    stage.add(streetBehind);
+
+    phillyTrain = createSprite(2000, 360);
+    phillyTrain.loadGraphic(getGraphic("philly/train.png", "week3"));
+    stage.add(phillyTrain);
+
+    street = createSprite(-40, streetBehind.y);
+    street.loadGraphic(getGraphic("philly/street.png", "week3"));
+    stage.add(street);
+
+    addGf(400, 778);
+    addEnemy(100, 867);
+    addPlayer(770, 862);
+}
+
+function onUpdate(elapsed)
+{
+    // Philly lights
+    var light = phillyCityLights[currentLightIndex];
+    if (light.alpha >= 0)
+        light.alpha -= elapsed * 0.4;
+
+    // Train
+    if (trainActive)
+    {
+        trainTotalTime += elapsed;
+        if (trainTotalTime >= 4.700)
+        {
+            if (gf.canIdle && !trainFinishing)
+            {
+                gf.canIdle = false;
+                gf.playAnim("hairBlow", true);
+            }
+            
+            trainDelta += elapsed;
+            if (trainDelta >= 1.0 / 24.0)
+            {
+                trainDelta -= (1.0 / 24.0);
+                
+                phillyTrain.x -= 400;
+                if (phillyTrain.x < -2000 && trainCars > 0)
+                {
+                    phillyTrain.x = -1150;
+                    trainCars -= 1;
+
+                    if (trainCars == 0)
+                    {
+                        if (!trainFinishing)
+                        {
+                            trainFinishing = true;
+                            gf.playAnim("hairFall", true);          
+                        }
+                    }
+                }
+                if (phillyTrain.x < -4000 && trainFinishing)
+                {
+                    trainActive = false;
+                    trainFinishing = false;
+
+                    trainCooldown = 5;
+
+                    trainDelta = 0.0;
+                    trainTotalTime = 0.0;
+                }
+            }
+        }
+    }
+    else
+    {
+        if (gf.getCurrentAnim().name == "hairFall" && gf.getCurrentAnim().finished)
+            gf.canIdle = true;
+    }
+}
+
+function onBeat(beat)
+{
+    if (beat >= 0)
+    {
+        if (beat % 4 == 0)
+        {
+            // Philly lights
+            currentLightIndex = Std.random(5);
+            for (i in 0...5)
+            {
+                var light = phillyCityLights[i];
+                if (i == currentLightIndex)
+                {
+                    light.visible = true;
+                    light.alpha = 1.0;
+                }
+                else
+                    light.visible = false;
+            }
+
+            // Train
+            if (trainCooldown == 0 && !trainActive)
+            {
+                var random = Std.random(101);
+                if (random > 90)
+                {
+                    trainActive = true;
+                    trainCars = 8;
+
+                    lazyPlaySound("train_passes.ogg", "week3");
+                }
+            }
+            else
+                trainCooldown -= 1;
+        }
+    }
+}

@@ -49,6 +49,6 @@ class Alphabet extends FlxTypedSpriteGroup<FlxSprite>
 		var atlasTexture:FlxGraphic = AssetHelper.getAsset("alphabet.png", IMAGE);
 		atlasTexture.persist = true;
 		atlasTexture.destroyOnNoUse = false;
-		alphabetAsset = FlxAtlasFrames.fromSparrow(atlasTexture, File.getContent(AssetHelper.getPath("alphabet.xml", IMAGE)));
+		alphabetAsset = FlxAtlasFrames.fromSparrow(atlasTexture, File.getContent(AssetHelper.getAssetPath("alphabet.xml", IMAGE)));
 	}
 }

@@ -1,6 +1,7 @@
 package izzy.gameplay;
 
 import flixel.FlxSprite;
+import flixel.animation.FlxAnimation;
 import flixel.graphics.frames.FlxFrame;
 import flixel.math.FlxPoint;
 import haxe.Json;
@@ -34,6 +35,8 @@ class Character extends FlxSprite
 {
 	public var idleSuffix:String = "";
 	public var singSuffix:String = "";
+
+	public var canIdle:Bool = true;
 	
 	var data:CharacterData;
 	var currentSupress:Int = 0;
@@ -44,11 +47,12 @@ class Character extends FlxSprite
 
 		trace("Spawning " + character);
 
-		var path:String = "data/characters/" + character + ".json";
+		var path:String = AssetHelper.getDataPath(character + ".json", CHARACTERS);
 		if (!FileSystem.exists(path))
 		{
 			trace("Error: Character doesn't exist, defaulting to dad.");
 			character = "dad";
+			path = AssetHelper.getDataPath(character + ".json", CHARACTERS);
 		}
 
 		data = Json.parse(File.getContent(path));
@@ -102,7 +106,7 @@ class Character extends FlxSprite
 		return midpoint;
 	}
 
-	inline public function playAnim(anim:String, force:Bool = false, supressDuration:Int = 0)
+	public function playAnim(anim:String, force:Bool = false, supressDuration:Int = 0)
 	{
 		if (animation.getByName(anim) != null)
 		{
@@ -111,12 +115,15 @@ class Character extends FlxSprite
 		}
 	}
 
+	inline public function getCurrentAnim():FlxAnimation
+		return animation.curAnim;
+
 	public function playIdle(beat:Int)
 	{
 		if (currentSupress > 0)
 			currentSupress -= 1;
 		
-		if (currentSupress == 0)
+		if (currentSupress == 0 && canIdle)
 		{
 			if (data.idleSequence != null)
 			{

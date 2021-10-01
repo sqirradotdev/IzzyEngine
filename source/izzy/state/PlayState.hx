@@ -7,14 +7,18 @@ import flixel.math.FlxPoint;
 import flixel.system.FlxSound;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import haxe.Exception;
 import haxe.Json;
 import izzy.core.AssetHelper;
 import izzy.core.ChartParser;
 import izzy.core.Conductor;
 import izzy.core.SongDatabase;
+import izzy.gameplay.ModchartHelper;
 import izzy.gameplay.Stage;
+import izzy.scripting.ScriptHelper.ScriptException;
 import izzy.state.base.MusicBeatState;
 import izzy.ui.GameplayUI;
+import lime.app.Application;
 import openfl.media.Sound;
 import sys.FileSystem;
 import sys.io.File;
@@ -64,12 +68,10 @@ class PlayState extends MusicBeatState
 	var currentWeek:Int;
 	var currentDifficulty:Difficulty = NORMAL;
 	var currentMode:Mode = FREEPLAY;
-	var songPaths:Array<String>;
+	var songPaths:SongPaths;
 	var gameplayConfig:GameplayConfig;
 
-	var inst:Sound;
-	var voices:Sound;
-
+	var created:Bool;
 	var paused:Bool = false;
 	var countingDown:Bool = false;
 
@@ -86,9 +88,12 @@ class PlayState extends MusicBeatState
 	var stage:Stage;
 	var stageCameraFollow:FlxObject;
 
+	var modchartHelper:ModchartHelper;
+
 	var enemyStrumLine:StrumLine;
 	var playerStrumLine:StrumLine;
 
+	var instObject:FlxSound;
 	var voicesObject:FlxSound;
 
 	var countDownTimer:FlxTimer;
@@ -151,8 +156,21 @@ class PlayState extends MusicBeatState
 
 		FlxG.cameras.add(charterCamera, false);
 
-		stage = new Stage(currentSong.stage, currentSong.characters, this);
-		add(stage);
+		try
+		{
+			stage = new Stage(currentSong.stage, currentSong.characters, this);
+			add(stage);
+		}
+		catch (e)
+		{
+			if (Std.isOfType(e, ScriptException))
+			{
+				scriptError(e);
+				return;
+			}
+			else
+				throw e;
+		}
 
 		stageCameraFollow = new FlxObject(0, 0);
 		add(stageCameraFollow);
@@ -185,15 +203,38 @@ class PlayState extends MusicBeatState
 		for (noteData in chartData.playerNotes)
 			playerStrumLine.addNote(noteData.strumIndex, noteData.time, noteData.holdTime);
 
+		if (songPaths.modchart != "")
+		{
+			try
+			{
+				modchartHelper = new ModchartHelper(songPaths.modchart, this);
+				add(modchartHelper);
+			}
+			catch (e)
+			{
+				if (Std.isOfType(e, ScriptException))
+				{
+					scriptError(e);
+					return;
+				}
+				else
+					throw e;
+			}
+		}
+
 		// woah
 		// what if you just leave this in the code no context -shubs
 		// :troll:
 
+		created = true;
 		startCountDown();
 	}
 
 	override public function update(elapsed:Float)
 	{
+		if (!created)
+			return;
+		
 		super.update(elapsed);
 
 		if (countDownTimer != null)
@@ -205,10 +246,10 @@ class PlayState extends MusicBeatState
 		stageCamera.followLerp = elapsed;
 
 		var input:Array<Bool> = [
-			FlxG.keys.pressed.D,
-			FlxG.keys.pressed.F,
-			FlxG.keys.pressed.J,
-			FlxG.keys.pressed.K
+			FlxG.keys.pressed.D || FlxG.keys.pressed.LEFT,
+			FlxG.keys.pressed.F || FlxG.keys.pressed.DOWN,
+			FlxG.keys.pressed.J || FlxG.keys.pressed.UP,
+			FlxG.keys.pressed.K || FlxG.keys.pressed.RIGHT
 		];
 
 		if (!paused)
@@ -365,7 +406,7 @@ class PlayState extends MusicBeatState
 		}
 			
 		// Update strum line time based on Conductor time
-		if (FlxG.sound.music.playing || countingDown || currentMode == CHARTER)
+		if (instObject.playing || countingDown || currentMode == CHARTER)
 		{
 			enemyStrumLine.time = Conductor.interpTime;
 			playerStrumLine.time = Conductor.interpTime;
@@ -389,6 +430,9 @@ class PlayState extends MusicBeatState
 
 	override function onBeat(beat:Int):Void
 	{
+		if (!created)
+			return;
+		
 		if (countingDown)
 		{
 			switch (beat)
@@ -405,13 +449,13 @@ class PlayState extends MusicBeatState
 		}
 
 		// Resync the vocals
-		if (voicesObject != null && voicesObject.playing && FlxG.sound.music.playing)
+		if (voicesObject != null && voicesObject.playing && instObject.playing)
 		{
-			var delta:Float = voicesObject.time - FlxG.sound.music.time;
+			var delta:Float = voicesObject.time - instObject.time;
 			if (Math.abs(delta) >= 5)
 			{
 				trace("Delta is " + delta + ", resyncing");
-				voicesObject.time = FlxG.sound.music.time;
+				voicesObject.time = instObject.time;
 			}
 		}
 
@@ -420,6 +464,9 @@ class PlayState extends MusicBeatState
 
 	override function onTick(tick:Int):Void
 	{
+		if (!created)
+			return;
+
 		if (chartData != null && chartData.gameplayEvents != null)
 		{		
 			while (chartData.gameplayEvents.length > 0 && chartData.gameplayEvents[0].tick <= tick)
@@ -434,7 +481,7 @@ class PlayState extends MusicBeatState
 
 	function getGameplayConfig()
 	{
-		var path:String = "./data/gameplay.json";
+		var path:String = AssetHelper.getDataPath("gameplay.json", ROOT);
 
 		if (FileSystem.exists(path))
 			gameplayConfig = Json.parse(File.getContent(path));
@@ -464,7 +511,7 @@ class PlayState extends MusicBeatState
 		songPaths = SongDatabase.getSongPaths(currentSong.songName, currentDifficulty);
 		trace(songPaths);
 
-		chartData = izzy.core.ChartParser.readChart(songPaths[0]);
+		chartData = ChartParser.readChart(songPaths.chart);
 		
 		chartData.enemyNotes.sort((a, b) -> Std.int(a.time * 100) - Std.int(b.time * 100));
 		chartData.playerNotes.sort((a, b) -> Std.int(a.time * 100) - Std.int(b.time * 100));
@@ -477,9 +524,11 @@ class PlayState extends MusicBeatState
 	 */
 	function getSongAudio()
 	{
-		inst = Sound.fromFile("./" + songPaths[1]);
-		if (songPaths[2] != "")
-			voices = Sound.fromFile("./" + songPaths[2]);
+		FlxG.sound.music = FlxG.sound.load(Sound.fromFile("./" + songPaths.inst));
+		FlxG.sound.music.persist = true;
+		instObject = FlxG.sound.music;
+		if (songPaths.voices != "")
+			voicesObject = FlxG.sound.load(Sound.fromFile("./" + songPaths.voices));
 	}
 
 	/** 
@@ -510,11 +559,11 @@ class PlayState extends MusicBeatState
 			countDownTimer = null;
 		}
 		
-		FlxG.sound.playMusic(inst, 1, false);
-		FlxG.sound.music.onComplete = endSong;
+		instObject.play();
+		instObject.onComplete = endSong;
 
-		if (voices != null)
-			voicesObject = FlxG.sound.play(voices);
+		if (voicesObject != null)
+			voicesObject.play();
 
 		countingDown = false;
 	}
@@ -626,10 +675,10 @@ class PlayState extends MusicBeatState
 		if (countingDown)
 			startSong();
 		
-		FlxG.sound.music.pause();
-		FlxG.sound.music.time = 0;
-		FlxG.sound.music.onComplete = null;
-		FlxG.sound.music.autoDestroy = false;
+		instObject.pause();
+		instObject.time = 0;
+		instObject.onComplete = null;
+		instObject.autoDestroy = false;
 
 		if (voicesObject != null)
 		{
@@ -648,12 +697,23 @@ class PlayState extends MusicBeatState
 		openSubState(new CharterSubState(charterCamera, this, chartData));
 	}
 
+	function scriptError(e:Exception)
+	{
+		Application.current.window.alert(Std.string(e), "Script error!");
+
+		transIn = null;
+		transOut = null;
+		created = false;
+
+		quit();
+	}
+
 	/** 
 	 * Quit PlayState
 	 */
 	function quit()
 	{
-		FlxG.sound.music.onComplete = null;
+		instObject.onComplete = null;
 
 		switch (currentMode)
 		{

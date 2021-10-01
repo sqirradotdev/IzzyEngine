@@ -168,10 +168,10 @@ class FreeplayState extends MusicBeatState
 					{
 						if (index == songSelection)
 						{
-							var songPaths:Array<String> = SongDatabase.getSongPaths(SongDatabase.songs[songSelection].songName);
+							var songPaths:SongPaths = SongDatabase.getSongPaths(SongDatabase.songs[songSelection].songName);
 
 							var lastSelection:Int = songSelection;
-							var inst:Sound = Sound.fromFile("./" + songPaths[1]);
+							var inst:Sound = Sound.fromFile("./" + songPaths.inst);
 
 							if (lastSelection == songSelection && !songSelected)
 							{

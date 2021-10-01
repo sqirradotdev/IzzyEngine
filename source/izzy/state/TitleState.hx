@@ -50,7 +50,7 @@ class TitleState extends MusicBeatState
 
 		super.create();
 
-		introTexts = Json.parse(File.getContent("./data/introTexts.json"));
+		introTexts = Json.parse(File.getContent(AssetHelper.getDataPath("introTexts.json", ROOT)));
 		introTextIndex = FlxG.random.int(0, introTexts.length - 1);
 
 		textGroup = new FlxTypedGroup<FlxObject>();

@@ -3,52 +3,41 @@ package izzy.gameplay;
 import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import izzy.core.AssetHelper;
 import izzy.scripting.ScriptHelper;
 import izzy.state.PlayState;
 
-@:access(izzy.state.PlayState)
-class Stage extends FlxTypedGroup<FlxBasic>
+class Stage extends ModchartHelper
 {
 	public var gf:Character;
 	public var enemy:Character;
 	public var player:Character;
 
-	var scriptHelper:ScriptHelper;
 	var characters:Array<String>;
-
-	var playState:PlayState;
 
 	public function new(stage:String, characters:Array<String>, state:PlayState)
 	{
-		super();
-
 		this.characters = characters;
-		this.playState = state;
-
+		
 		scriptHelper = new ScriptHelper();
-
+		
+		scriptHelper.expose.set("stage", this);
+		scriptHelper.expose.set("gf", null);
+		scriptHelper.expose.set("enemy", null);
+		scriptHelper.expose.set("player", null);
+		scriptHelper.expose.set("addGf", addGf);
 		scriptHelper.expose.set("addEnemy", addEnemy);
 		scriptHelper.expose.set("addPlayer", addPlayer);
-		scriptHelper.expose.set("addGf", addGf);
-		scriptHelper.expose.set("stage", this);
-		scriptHelper.expose.set("stageCamera", playState.stageCamera);
-		scriptHelper.expose.set("uiCamera", playState.uiCamera);
 
-		scriptHelper.loadScript("./data/stages/" + stage + ".hscript");
-
-		if (scriptHelper.get("onCreate") != null)
-			scriptHelper.get("onCreate")();
+		super(AssetHelper.getDataPath(stage + ".hscript", STAGES), state);
 	}
 
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
-
-		if (scriptHelper.get("onUpdate") != null)
-			scriptHelper.get("onUpdate")(elapsed);
 	}
 
-	public function onBeat(beat:Int)
+	override public function onBeat(beat:Int)
 	{
 		if (gf != null)
 			gf.playIdle(beat);
@@ -57,14 +46,7 @@ class Stage extends FlxTypedGroup<FlxBasic>
 		
 		player.playIdle(beat);
 
-		if (scriptHelper.get("onBeat") != null)
-			scriptHelper.get("onBeat")(beat);
-	}
-
-	public function onTick(tick:Int)
-	{
-		if (scriptHelper.get("onTick") != null)
-			scriptHelper.get("onTick")(tick);
+		super.onBeat(beat);
 	}
 
 	function addKeyCharacter(whoId:Int, x:Int, y:Int, scrollX:Float = 1.0, scrollY:Float = 1.0):Bool
@@ -84,12 +66,15 @@ class Stage extends FlxTypedGroup<FlxBasic>
 				return false;
 		}
 
-		var character:Character = new Character(x, y, characters[whoId]);
-		character.scrollFactor.set(scrollX, scrollY);
-		add(character);
-		character.playIdle(0);
-		scriptHelper.set(who, character);
-		Reflect.setField(this, who, character);
+		if (characters[whoId] != "")
+		{
+			var character:Character = new Character(x, y, characters[whoId]);
+			character.scrollFactor.set(scrollX, scrollY);
+			add(character);
+			character.playIdle(0);
+			scriptHelper.set(who, character);
+			Reflect.setField(this, who, character);
+		}
 
 		return true;
 	}

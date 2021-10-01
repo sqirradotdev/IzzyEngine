@@ -1,0 +1,97 @@
+var skyBG;
+var bgLimo;
+var limoDancers = [];
+var fastCar;
+var limo;
+
+var limoMoving = false;
+var limoCooldown = 0;
+
+function onCreate()
+{
+    stageCamera.zoom = 0.9;
+
+    skyBG = createSprite(-120, -50);
+    skyBG.loadGraphic(getGraphic("limo/limoSunset.png", "week4"));
+    skyBG.scrollFactor.set(0.1, 0.1);
+    stage.add(skyBG);
+
+    bgLimo = createSprite(-200, 480);
+    bgLimo.frames = getSparrowAtlas("limo/bgLimo", "week4");
+    bgLimo.animation.addByPrefix("drive", "background limo pink", 24);
+    bgLimo.animation.play("drive");
+    bgLimo.scrollFactor.set(0.4, 0.4);
+    stage.add(bgLimo);
+
+    for (i in 0...5)
+    {
+        var dancer = createSprite((370 * i) + 130, bgLimo.y - 400);
+        dancer.frames = getSparrowAtlas("limo/limoDancer", "week4");
+		dancer.animation.addByIndices("danceLeft", "bg dancer sketch PINK", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
+		dancer.animation.addByIndices("danceRight", "bg dancer sketch PINK", [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
+		dancer.animation.play('danceLeft');
+        dancer.scrollFactor.set(0.4, 0.4);
+        stage.add(dancer);
+        limoDancers.push(dancer);
+    }
+
+    fastCar = createSprite(-10000, 160);
+    fastCar.loadGraphic(getGraphic("limo/fastCarLol.png", "week4"));
+    stage.add(fastCar);
+
+    addGf(400, 778);
+
+    limo = createSprite(-120, 550);
+    limo.frames = getSparrowAtlas("limo/limoDrive", "week4");
+    limo.animation.addByPrefix("drive", "Limo stage", 24);
+    limo.animation.play("drive");
+    stage.add(limo);
+
+    addEnemy(100, 867);
+    addPlayer(1030, 642);
+}
+
+function onUpdate(elapsed)
+{
+    if (limoMoving)
+    {
+        fastCar.x += elapsed * 8000;
+        if (fastCar.x > 2000)
+        {
+            fastCar.x = -10000;
+            limoMoving = false;
+        }
+    }
+}
+
+function onBeat(beat)
+{
+    if (beat >= 0)
+    {
+        // Henchmen
+        for (i in 0...5)
+        {
+            var dancer = limoDancers[i];
+            if (beat % 2 == 0)
+                dancer.animation.play('danceLeft');
+            else
+                dancer.animation.play('danceRight');
+        }
+
+        // Passing limo
+        if (limoCooldown == 0 && !limoMoving)
+        {
+            var random = Std.random(101);
+            if (random > 90)
+            {
+                lazyPlaySound("carPass" + Std.random(2) + ".ogg", "week4");
+                limoMoving = true;
+                limoCooldown = 20;
+            }
+        }
+        else
+        {
+            limoCooldown -= 1;
+        }
+    }
+}

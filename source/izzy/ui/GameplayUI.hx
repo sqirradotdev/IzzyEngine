@@ -1,7 +1,6 @@
 package izzy.ui;
 
 import flixel.FlxSprite;
-import flixel.addons.display.FlxTiledSprite;
 import flixel.animation.FlxAnimation;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -13,7 +12,6 @@ import haxe.Json;
 import izzy.core.AssetHelper;
 import openfl.display.BitmapData;
 import openfl.geom.ColorTransform;
-import openfl.geom.Matrix;
 import sys.FileSystem;
 import sys.io.File;
 
@@ -47,17 +45,15 @@ class NoteStyle
 
 	public static function loadNoteStyle(file:String = "default")
 	{
-		var path:String = "./data/noteStyles/";
-		if (FileSystem.exists(path + file + ".json"))
-			path += file + ".json";
-		else
-			path += "default.json";
+		var path:String = AssetHelper.getDataPath(file + ".json", NOTE_STYLES);
+		if (!FileSystem.exists(path))
+			path = AssetHelper.getDataPath("default.json", NOTE_STYLES);
 
 		data = Json.parse(File.getContent(path));
 
 		noteAsset = AssetHelper.getSparrowAtlas(data.atlasPath[0], data.atlasPath[1]);
 
-		/* Pre-scale note holds due to how FlxTiledSprite works */
+		/* Convert hold tail frames to FlxGraphic due to how FlxTiledSprite works */
 		for (frameName in noteAsset.framesHash.keys())
 		{
 			for (i in 0...4)
@@ -66,17 +62,6 @@ class NoteStyle
 				{
 					var frame:FlxFrame = noteAsset.framesHash.get(frameName);
 					var graphic:FlxGraphic = FlxGraphic.fromFrame(frame);
-
-					// Scale the BitmapData inside the graphic
-					var matrix:Matrix = new Matrix();
-					matrix.scale(data.globalNoteScale, data.globalNoteScale);
-					var newBD:BitmapData = new BitmapData(Std.int(graphic.bitmap.width * data.globalNoteScale),
-						Std.int(graphic.bitmap.height * data.globalNoteScale), true, 0x000000);
-					newBD.draw(graphic.bitmap, matrix, null, null, null, NoteStyle.data.antialiasing);
-					graphic.bitmap = newBD;
-
-					if (tailHoldGraphics[i] != null)
-						tailHoldGraphics[i].destroy();
 
 					tailHoldGraphics[i] = graphic;
 				}
@@ -94,7 +79,7 @@ class NoteObject extends FlxTypedSpriteGroup<FlxSprite>
 	public var noteSpeed:Float = 1.0;
 
 	public var arrow:FlxSprite;
-	public var tailHold:FlxTiledSprite;
+	public var tailHold:TiledSprite;
 	public var tailEnd:FlxSprite;
 	public var noteScale:Float;
 
@@ -113,9 +98,12 @@ class NoteObject extends FlxTypedSpriteGroup<FlxSprite>
 		// Tail (note hold) rendering
 		if (holdTime > 0)
 		{
-			tailHold = new FlxTiledSprite(null, NoteStyle.tailHoldGraphics[strumIndex].width, 10);
+			tailHold = new TiledSprite(null, 0, 1);
 			tailHold.loadGraphic(NoteStyle.tailHoldGraphics[strumIndex]);
 			tailHold.origin.set();
+			tailHold.width = NoteStyle.tailHoldGraphics[strumIndex].width * NoteStyle.data.globalNoteScale * noteScale;
+			tailHold.scale.x = NoteStyle.data.globalNoteScale * noteScale;
+			tailHold.scale.y = tailHold.scale.x;
 			tailHold.antialiasing = NoteStyle.data.antialiasing;
 			add(tailHold);
 

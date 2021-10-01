@@ -1,7 +1,7 @@
 {
-	"stage": "stage",
+	"stage": "mall",
 	"noteStyle": "default",
 	"bpm": 150,
 	"songName": "eggnog",
-	"characters": ["dad", "bf", "gf"]
+	"characters": ["parents-christmas", "bf", "gf"]
 }

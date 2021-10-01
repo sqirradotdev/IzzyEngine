@@ -1,21 +1,20 @@
 package izzy.core;
 
 import haxe.Json;
-import haxe.macro.Type.AnonType;
-import lime.utils.Assets;
 import sys.FileSystem;
 import sys.io.File;
 
-enum Difficulty
+@:enum abstract Difficulty(String) to String
 {
-	EASY;
-	NORMAL;
-	HARD;
+	var EASY = "easy";
+	var NORMAL = "normal";
+	var HARD = "hard";
 }
 
 typedef Week =
 {
 	var weekName:String;
+
 	var storyMenuCharacters:Array<String>;
 	var weekTagline:String;
 	var songs:Array<String>;
@@ -30,6 +29,14 @@ typedef SongMetadata =
 	var noteStyle:String;
 }
 
+typedef SongPaths = 
+{
+	var inst:String;
+	var voices:String;
+	var chart:String;
+	var modchart:String;
+}
+
 class SongDatabase
 {
 	public static var weeks:Array<Week>;
@@ -37,9 +44,9 @@ class SongDatabase
 
 	public static function updateWeekList():Bool
 	{
-		if (FileSystem.exists("data/weeks.json"))
+		if (FileSystem.exists(AssetHelper.getDataPath("weeks.json", ROOT)))
 		{
-			weeks = Json.parse(File.getContent("data/weeks.json"));
+			weeks = Json.parse(File.getContent(AssetHelper.getDataPath("weeks.json", ROOT)));
 			trace(weeks);
 		}
 		else
@@ -95,35 +102,38 @@ class SongDatabase
 		return songMetadata;
 	}
 
-	public static function getSongPaths(song:String, difficulty:Difficulty = NORMAL):Array<String>
+	public static function getSongPaths(song:String, difficulty:Difficulty = NORMAL):SongPaths
 	{
 		var dir:String = "songs/" + song + "/";
-		var chartPath:String = "";
-		var instPath:String = "";
-		var voicesPath:String = "";
 
-		switch (difficulty)
-		{
-			case EASY:
-				chartPath = dir + "easy";
-			case NORMAL:
-				chartPath = dir + "normal";
-			case HARD:
-				chartPath = dir + "hard";
+		var songPaths:SongPaths = {
+			inst: "",
+			voices: "",
+			chart: "",
+			modchart: ""
 		}
 
-		if (FileSystem.exists("./" + chartPath + ".json"))
-			chartPath += ".json";
-		else if (FileSystem.exists("./" + chartPath + ".chart"))
-			chartPath += ".chart";
-		else
-			chartPath = "";
+		songPaths.inst = dir + "Inst.ogg";
+		if (!FileSystem.exists(songPaths.inst))
+			songPaths.inst = "";
+		
+		songPaths.voices = dir + "Voices.ogg";
+		if (!FileSystem.exists(songPaths.voices))
+			songPaths.voices = "";
 
-		if (FileSystem.exists("./" + dir + "Inst.ogg"))
-			instPath = dir + "Inst.ogg";
-		if (FileSystem.exists("./" + dir + "Voices.ogg"))
-			voicesPath = dir + "Voices.ogg";
+		songPaths.chart = dir + "songChart.json";
+		if (!FileSystem.exists("./" + songPaths.chart))
+		{
+			songPaths.chart = dir + difficulty + ".json";
+			if (!FileSystem.exists("./" + songPaths.chart))
+				songPaths.chart = "";
+		}
 
-		return [chartPath, instPath, voicesPath];
+		songPaths.modchart = dir + "modchart.hscript";
+		if (!FileSystem.exists(songPaths.modchart))
+			songPaths.modchart = "";
+
+		trace(songPaths);
+		return songPaths;
 	}
 }

@@ -54,7 +54,7 @@
             "fromPrefix": "Parent Right Note Mom",
             "fps": 24,
             "loop": false,
-            "offset": [1.0, -24.0]
+            "offset": [1.0, 24.0]
         },
         "singDown-alt": {
             "fromPrefix": "Parent Down Note Mom",

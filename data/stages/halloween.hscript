@@ -1,5 +1,5 @@
 var halloweenBg;
-var lightningBeatTimer = 0;
+var lightningCooldown = 0;
 
 function onCreate()
 {
@@ -8,7 +8,6 @@ function onCreate()
     halloweenBg.animation.addByPrefix("idle", "halloweem bg0");
     halloweenBg.animation.addByPrefix("lightning", "halloweem bg lightning strike", 24, false);
     halloweenBg.animation.play("idle");
-    halloweenBg.antialiasing = true;
     stage.add(halloweenBg);
 
     addGf(400, 778);
@@ -20,25 +19,19 @@ function onBeat(beat)
 {
     if (beat > 4)
     {
-        if (lightningBeatTimer == 0)
+        if (lightningCooldown == 0)
         {
             var random = Std.random(101);
             if (random > 90)
             {
-                // trace("Triggered! " + random);
                 lazyPlaySound("thunder_" + (Std.random(2) + 1) + ".ogg", "week2");
                 halloweenBg.animation.play("lightning", true);
-                lightningBeatTimer = 20;
+                lightningCooldown = 20;
             }
-            /* else
-            {
-                trace("not triggered " + random);
-            } */
         }
         else
         {
-            // trace("Cooldown " + lightningBeatTimer);
-            lightningBeatTimer -= 1;
+            lightningCooldown -= 1;
         }
     }
 }

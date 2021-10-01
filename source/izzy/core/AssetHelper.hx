@@ -10,9 +10,19 @@ import openfl.utils.Assets;
 import sys.FileSystem;
 import sys.io.File;
 
+@:enum abstract DataCategory(String) to String
+{
+	var ROOT = "";
+	var CHARACTERS = "characters";
+	var NOTE_STYLES = "noteStyles";
+	var STAGES = "stages";
+	var MODULES = "modules";
+	var SHADERS = "shaders";
+}
+
 class AssetHelper
 {
-	public static function getPath(path:String, type:AssetType, group:String = "default"):String
+	public static function getAssetPath(path:String, type:AssetType, group:String = "default"):String
 	{
 		switch (type)
 		{
@@ -29,7 +39,7 @@ class AssetHelper
 
 	public static function getAsset(path:String, type:AssetType, group:String = "default"):Dynamic
 	{
-		var actualPath:String = getPath(path, type, group);
+		var actualPath:String = getAssetPath(path, type, group);
 
 		if (FileSystem.exists(actualPath)) // Check if it exists in the FileSystem (desktop only)
 		{
@@ -94,8 +104,9 @@ class AssetHelper
 		return null;
 	}
 
-	public static function getSparrowAtlas(path:String, group:String = "default"):FlxAtlasFrames
-	{
-		return FlxAtlasFrames.fromSparrow(getAsset(path + ".png", IMAGE, group), File.getContent(getPath(path + ".xml", IMAGE, group)));
-	}
+	inline public static function getDataPath(path:String, category:DataCategory):String
+		return "./data/" + category + "/" + path;
+
+	inline public static function getSparrowAtlas(path:String, group:String = "default"):FlxAtlasFrames
+		return FlxAtlasFrames.fromSparrow(getAsset(path + ".png", IMAGE, group), File.getContent(getAssetPath(path + ".xml", IMAGE, group)));
 }

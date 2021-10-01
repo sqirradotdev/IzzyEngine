@@ -1,0 +1,69 @@
+var bg;
+var upperBoppers;
+var bgEscalator;
+var tree;
+var bottomBoppers;
+var fgSnow;
+var santa;
+
+function onCreate()
+{
+    stageCamera.zoom = 0.9;
+    
+    bg = createSprite(-1000, -500);
+    bg.loadGraphic(getGraphic("christmas/bgWalls.png", "week5"));
+    bg.scrollFactor.set(0.2, 0.2);
+    bg.scale.set(0.8, 0.8);
+    bg.updateHitbox();
+    stage.add(bg);
+
+    upperBoppers = createSprite(-240, -90);
+    upperBoppers.frames = getSparrowAtlas("christmas/upperBop", "week5");
+    upperBoppers.animation.addByPrefix("idle", "Upper Crowd Bob", 24, false);
+    upperBoppers.scrollFactor.set(0.33, 0.33);
+    upperBoppers.scale.set(0.85, 0.85);
+    upperBoppers.updateHitbox();
+    stage.add(upperBoppers);
+
+    bgEscalator = createSprite(-1100, -600);
+    bgEscalator.loadGraphic(getGraphic("christmas/bgEscalator.png", "week5"));
+    bgEscalator.scrollFactor.set(0.3, 0.3);
+    bgEscalator.active = false;
+    bgEscalator.scale.set(0.9, 0.9);
+    bgEscalator.updateHitbox();
+    stage.add(bgEscalator);
+
+    tree = createSprite(370, -250);
+    tree.loadGraphic(getGraphic("christmas/christmasTree.png", "week5"));
+    tree.scrollFactor.set(0.40, 0.40);
+    stage.add(tree);
+
+    bottomBoppers = createSprite(-300, 140);
+    bottomBoppers.frames = getSparrowAtlas("christmas/bottomBop", "week5");
+    bottomBoppers.animation.addByPrefix("idle", "Bottom Level Boppers", 24, false);
+    bottomBoppers.scrollFactor.set(0.9, 0.9);
+    stage.add(bottomBoppers);
+
+    fgSnow = createSprite(-600, 700);
+    fgSnow.loadGraphic(getGraphic("christmas/fgSnow.png", "week5"));
+    stage.add(fgSnow);
+
+    santa = createSprite(-840, 150);
+    santa.frames = getSparrowAtlas("christmas/santa", "week5");
+    santa.animation.addByPrefix("idle", "santa idle in fear", 24, false);
+    stage.add(santa);
+
+    addGf(400, 778);
+    addEnemy(-400, 867);
+    addPlayer(970, 862);
+}
+
+function onBeat(beat)
+{
+    if (beat >= 0)
+    {
+        upperBoppers.animation.play("idle", true);
+        bottomBoppers.animation.play("idle", true);
+        santa.animation.play("idle", true);
+    }
+}
