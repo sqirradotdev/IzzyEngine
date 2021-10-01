@@ -74,9 +74,10 @@ class Stage extends ModchartHelper
 			character.playIdle(0);
 			scriptHelper.set(who, character);
 			Reflect.setField(this, who, character);
+			return true;
 		}
 
-		return true;
+		return false;
 	}
 	
 	function addEnemy(x:Int, y:Int, scrollX:Float = 1.0, scrollY:Float = 1.0):Bool
