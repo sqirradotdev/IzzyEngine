@@ -29,6 +29,8 @@ class Main
 		"Almost as dead as Garcello.", // shubs
 		"Please stop you aren't even making sense!", // shubs
 		"You were so bad the game just crashed.",  // shubs
+		"Hey shitass, wanna see me crash the game?", // nintendofan44
+		"The game ran so fast that it crashed.", // nintendofan44
 	];
 
 	public static function main()
