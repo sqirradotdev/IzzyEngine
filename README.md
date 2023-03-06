@@ -1,8 +1,6 @@
 # Friday Night Funkin' Izzy Engine
 
-![License](https://img.shields.io/github/license/gedehari/Funkin-IzzyEngine?style=flat-square) ![Version](https://img.shields.io/github/v/release/gedehari/Funkin-IzzyEngine?style=flat-square) ![Repo Size](https://img.shields.io/github/repo-size/gedehari/Funkin-IzzyEngine?style=flat-square)
-
-[![AppVeyor Windows](https://img.shields.io/appveyor/build/gedehari/izzyengine-win32?style=flat-square&logo=appveyor&label=windows%20build)](https://ci.appveyor.com/project/gedehari/izzyengine-win32/build/artifacts) [![AppVeyor Linux](https://img.shields.io/appveyor/build/gedehari/izzyengine-linux?style=flat-square&logo=appveyor&label=linux%20build)](https://ci.appveyor.com/project/gedehari/izzyengine-linux/build/artifacts) 
+![License](https://img.shields.io/github/license/gedehari/Funkin-IzzyEngine?style=flat-square) ![Repo Size](https://img.shields.io/github/repo-size/gedehari/Funkin-IzzyEngine?style=flat-square)
 
 ![Izzy Engine Logo](img/IzzyEngineLogo.svg)
 
